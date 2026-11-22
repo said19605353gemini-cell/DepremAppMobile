@@ -841,9 +841,110 @@
                 }
             });
 
-            renderList(filtered);
+            currentFilteredList = filtered;
+            renderCurrentPage();
+            renderPagination();
             updateStats(filtered);
             if (leafletMap) updateMap(filtered);
+        }
+
+        function renderCurrentPage() {
+            const container = document.getElementById('eqContainer');
+            if (!currentFilteredList.length) {
+                container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem bulunamadı.</div>`;
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageItems = currentFilteredList.slice(startIndex, endIndex);
+
+            container.innerHTML = pageItems.map((item) => {
+                const { bg, label } = getMagnitudeColor(item.mag);
+                const { fullDate, trTime, localTime } = formatDateInfo(item.date, item.lng);
+
+                return `
+                <div class="eq-card" onclick="this.classList.toggle('expanded')">
+                    <div class="eq-card-header">
+                        <div class="eq-badge" style="background: ${bg};">
+                            <span class="mag">${item.mag.toFixed(1)}</span>
+                            <span class="type">${label}</span>
+                        </div>
+                        <div class="eq-info">
+                            <div class="eq-location">${item.location}</div>
+                            <div class="eq-sub">
+                                <span class="eq-country-tag">${item.country}</span>
+                                <span>📍 ${item.depth} km Derinlik</span>
+                            </div>
+                        </div>
+                        <div class="eq-meta">
+                            <div style="font-weight: 800; color: #38BDF8; font-size: 13px;">${trTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">TR</span></div>
+                            <div style="font-size: 11px; color: #FBBF24; font-weight: 700; margin-top: 2px;">${localTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">Yerel</span></div>
+                        </div>
+                    </div>
+                    <!-- Her telefonda net gözüken tam tarih şeridi -->
+                    <div class="eq-date-row">
+                        <span>📅 <b>${fullDate}</b></span>
+                        <span style="color: #475569;">•</span>
+                        <span style="color: #64748B; font-size: 10px;">Detay için tıkla ▾</span>
+                    </div>
+                    <!-- Tıklayınca Açılan Tam Detay Alanı -->
+                    <div class="eq-details">
+                        <div style="color: #F8FAFC; font-weight: 700; margin-bottom: 6px;">📍 Tam Konum: ${item.location}</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+                            <div>🌐 <b>Koordinat:</b> ${item.lat ? item.lat.toFixed(4) : '-'}, ${item.lng ? item.lng.toFixed(4) : '-'}</div>
+                            <div>⚡ <b>Derinlik:</b> ${item.depth} km</div>
+                            <div>🇹🇷 <b>TR Saati:</b> ${trTime}</div>
+                            <div>🌍 <b>Yerel Saat:</b> ${localTime}</div>
+                            <div style="grid-column: span 2;">📅 <b>Oluş Tarihi:</b> ${fullDate}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderPagination() {
+            const pagination = document.getElementById('paginationContainer');
+            const totalPages = Math.ceil(currentFilteredList.length / pageSize);
+
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+            let html = '';
+
+            // Önceki Sayfa Butonu
+            html += `<div class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="goToPage(${currentPage - 1})">◀</div>`;
+
+            // Sayfa Sekmeleri (50'şerli parçalar)
+            for (let i = 1; i <= totalPages; i++) {
+                // Çok fazla sayfa varsa akıllı kısaltma
+                if (totalPages > 7) {
+                    if (i !== 1 && i !== totalPages && Math.abs(i - currentPage) > 1) {
+                        if (i === 2 || i === totalPages - 1) {
+                            html += `<div class="page-btn disabled" style="border:none; background:transparent;">...</div>`;
+                        }
+                        continue;
+                    }
+                }
+
+                html += `<div class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</div>`;
+            }
+
+            // Sonraki Sayfa Butonu
+            html += `<div class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="goToPage(${currentPage + 1})">▶</div>`;
+
+            pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderCurrentPage();
+            renderPagination();
+            // Sayfanın en üstüne kaydır
+            document.querySelector('.app-shell').scrollIntoView({ behavior: 'smooth' });
         }
 
         function formatDateInfo(dateRaw, lng) {
