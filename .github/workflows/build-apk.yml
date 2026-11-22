@@ -51,13 +51,14 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
       with:
-        tag_name: v1.0.0
-        name: "Deprem Radar v1.0.0 (Android APK)"
+        tag_name: v1.0.1
+        name: "Deprem Radar v1.0.1 (Android APK - Güncel Sürüm)"
         body: |
-          ### 📱 Deprem Radar Mobil Android APK
-          - AFAD & USGS Canlı Deprem Verileri
-          - Son 7 Gün / 30 Günlük Geçmiş Filtresi
-          - Ülke ve Şehir Arama
-          - İnteraktif Harita Görünümü
-          - Tüm Android Cihazlarla Uyumlu
+          ### 📱 Deprem Radar Mobil Android APK (Son Güncel Sürüm)
+          - ✨ Tüm telefon boyutlarına tam uyumlu mobil tasarım
+          - 📅 Ayrı ve net tam tarih şeridi (gün.ay.yıl)
+          - 🕒 Çift saat desteği: Hem Türkiye Saati (TR) hem de deprem yerel saati
+          - 🔍 Tıklanınca açılan detaylı akordiyon bilgi kartları
+          - 🇹🇷 AFAD & 🌍 USGS canlı veri ve geçmiş filtreleri (3 gün - 1 sene)
+          - 🗺️ İnteraktif sismik harita
         files: android/app/build/outputs/apk/debug/app-debug.apk
