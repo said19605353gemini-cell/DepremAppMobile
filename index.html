@@ -564,11 +564,15 @@
                     const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
                     const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
 
-                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=400`;
+                    // Geçmişe dönük gün seçildiyse:
+                    // Örn 7 gün, 15 gün, 30 gün için AFAD'dan min 2.0 veya 1.8 çekerek gün gün eski kayıtların gelmesi sağlanır.
+                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
                     if (minMagnitude > 0) {
                         url += `&minmag=${minMagnitude}`;
-                    } else if (currentDays >= 7) {
-                        url += `&minmag=1.5`;
+                    } else if (currentDays > 1) {
+                        // 1 günden fazlaysa günde 100 küçük deprem olduğu için kotayı doldurmasın,
+                        // 17, 18, 19, 20 Kasım gibi eski günlerin de gelmesi için min 2.0 çekilir.
+                        url += `&minmag=2.0`;
                     }
 
                     const controller = new AbortController();
