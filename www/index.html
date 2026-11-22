@@ -488,6 +488,17 @@
                         <div class="pill" onclick="setMagnitudeFilter(15.0, this)">≥ 15.0</div>
                     </div>
                 </div>
+
+                <!-- Sıralama Seçenekleri (En yüksek puan, En yeni, En eski) -->
+                <div class="filter-group">
+                    <span class="filter-group-title">Sıralama Ölçütü:</span>
+                    <div class="filter-wrap" id="sortFilters">
+                        <div class="pill active" onclick="setSortMode('newest', this)">🕒 En Yeni ➔ Eski</div>
+                        <div class="pill" onclick="setSortMode('oldest', this)">⏳ Eskiden ➔ Yeniye</div>
+                        <div class="pill" onclick="setSortMode('magDesc', this)">🔥 En Yüksek Şiddet</div>
+                        <div class="pill" onclick="setSortMode('magAsc', this)">🌱 En Düşük Şiddet</div>
+                    </div>
+                </div>
             </div>
 
             <div class="eq-list" id="eqContainer">
@@ -521,8 +532,16 @@
         let currentSource = 'afad';
         let currentDays = 7;
         let minMagnitude = 0;
+        let currentSort = 'newest';
         let leafletMap = null;
         let mapMarkers = [];
+
+        function setSortMode(mode, el) {
+            currentSort = mode;
+            document.querySelectorAll('#sortFilters .pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            applyFilters();
+        }
 
         function setTimeRange(days, el) {
             currentDays = days;
@@ -714,7 +733,7 @@
 
         function applyFilters() {
             const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-            const filtered = rawData.filter(item => {
+            let filtered = rawData.filter(item => {
                 if (item.mag < minMagnitude) return false;
                 if (query) {
                     const loc = (item.location || '').toLowerCase();
@@ -724,6 +743,35 @@
                     if (!loc.includes(query) && !country.includes(query) && !prov.includes(query) && !dist.includes(query)) return false;
                 }
                 return true;
+            });
+
+            // Tarih ve Büyüklük Sıralamaları
+            filtered.sort((a, b) => {
+                // Zaman timestamp'i elde etme
+                const getEpoch = (val) => {
+                    if (typeof val === 'number') return val;
+                    if (typeof val === 'string') {
+                        if (val.includes('-')) return new Date(val.replace(' ', 'T')).getTime() || 0;
+                        if (val.includes('.')) {
+                            const p = val.split(' ');
+                            if (p.length >= 2) {
+                                const d = p[0].split('.');
+                                return new Date(`${d[2]}-${d[1]}-${d[0]}T${p[1]}`).getTime() || 0;
+                            }
+                        }
+                    }
+                    return new Date(val).getTime() || 0;
+                };
+
+                if (currentSort === 'magDesc') {
+                    return b.mag - a.mag; // En yüksek puan/şiddetten aşağıya
+                } else if (currentSort === 'magAsc') {
+                    return a.mag - b.mag; // En düşükten yukarıya
+                } else if (currentSort === 'oldest') {
+                    return getEpoch(a.date) - getEpoch(b.date); // Eskiden yeniye
+                } else {
+                    return getEpoch(b.date) - getEpoch(a.date); // En yeniden en eskiye
+                }
             });
 
             renderList(filtered);
