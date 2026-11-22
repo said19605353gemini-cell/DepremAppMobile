@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Deprem Radar Mobil</title>
+    <title>Deprem Radar Mobil - Gelişmiş</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0B1120;
+            color: #F8FAFC;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        /* HEADER */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 16px 20px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #1E293B;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-badge {
+            background: #EF4444;
+            color: white;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .header-text h1 {
+            font-size: 17px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-text p {
+            font-size: 11px;
+            color: #94A3B8;
+        }
+
+        .btn-refresh {
+            background: #1E293B;
+            border: 1px solid #334155;
+            color: #38BDF8;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            padding: 7px 11px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:active {
+            transform: scale(0.95);
+        }
+
+        /* STATS BAR */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 16px 20px 8px 20px;
+            gap: 8px;
+            padding: 12px 18px 6px 18px;
+        }
+
+        .stat-card {
+            background: #1E293B;
+            border-radius: 12px;
+            padding: 12px 10px;
+            border-radius: 10px;
+            padding: 10px 8px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+
+        .stat-title {
+            font-size: 10px;
+            font-size: 9px;
+            color: #94A3B8;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-val {
+            font-size: 20px;
+            font-size: 18px;
+            font-weight: 800;
+            margin-top: 4px;
+            margin-top: 2px;
+        }
+
+        /* SEARCH & FILTER */
+        /* ADVANCED FILTERS */
+        .filter-section {
+            padding: 8px 20px;
+            padding: 8px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            gap: 8px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px 14px;
+            padding: 8px 12px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #FFF;
+            width: 100%;
+            font-size: 14px;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        .filter-pills {
+
+            .filter-row {
+                display: flex;
+                gap: 8px;
+                gap: 6px;
+                overflow-x: auto;
+                scrollbar-width: none;
+                padding-bottom: 4px;
+            }
+
+            .filter-pills::-webkit-scrollbar {
+                display: none;
+            }
+
+            .filter-row::-webkit-scrollbar {
+                display: none;
+            }
+
+            .pill {
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 12px;
+                padding: 5px 12px;
+                border-radius: 16px;
+                font-size: 11px;
+                font-weight: 600;
+                background: #1E293B;
+                color: #94A3B8;
+                border: 1px solid #334155;
+                white-space: nowrap;
+                cursor: pointer;
+            }
+
+            .pill.active {
+                background: #3B82F6;
+                color: #FFF;
+                border-color: #3B82F6;
+            }
+
+            /* LIST OF EARTHQUAKES */
+            /* EARTHQUAKE LIST */
+            .eq-list {
+                padding: 10px 20px;
+                padding: 8px 18px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                gap: 8px;
+            }
+
+            .eq-card {
+                background: #1E293B;
+                border: 1px solid #334155;
+                border-radius: 14px;
+                padding: 14px;
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                transition: 0.15s;
+                gap: 12px;
+            }
+
+            .eq-card:active {
+                transform: scale(0.98);
+            }
+
+            .eq-badge {
+                min-width: 54px;
+                height: 54px;
+                border-radius: 12px;
+                min-width: 50px;
+                height: 50px;
+                border-radius: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 800;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .eq-badge .mag {
+                font-size: 19px;
+                font-size: 18px;
+                line-height: 1;
+            }
+
+            .eq-badge .type {
+                font-size: 8px;
+                text-transform: uppercase;
+                opacity: 0.9;
+                margin-top: 3px;
+                margin-top: 2px;
+            }
+
+            .eq-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .eq-location {
+                font-size: 14px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #F8FAFC;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .eq-sub {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 4px;
+                gap: 6px;
+                margin-top: 3px;
+                font-size: 11px;
+                color: #94A3B8;
+            }
+
+            .eq-meta {
+                text-align: right;
+                font-size: 12px;
+
+                .eq-country-tag {
+                    background: #334155;
+                    color: #38BDF8;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    font-size: 10px;
+                    font-weight: 600;
+                }
+
+                .eq-meta {
+                    text-align: right;
+                    font-size: 11px;
+                    color: #94A3B8;
+                    white-space: nowrap;
+                }
+
+                /* BOTTOM NAV */
+                nav.bottom-nav {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 60px;
+                    background: rgba(15, 23, 42, 0.98);
+                    border-top: 1px solid #1E293B;
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                    z-index: 1000;
+                }
+
+                .nav-item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 3px;
+                    color: #64748B;
+                    font-size: 11px;
+                    cursor: pointer;
+                    text-decoration: none;
+                }
+
+                .nav-item.active {
+                    color: #38BDF8;
+                }
+
+                .nav-icon {
+                    font-size: 18px;
+                }
+
+                /* MAP VIEW MODAL / TAB */
+                #map-view {
+                    display: none;
+                    position: fixed;
+                    top: 65px;
+                    top: 60px;
+                    bottom: 60px;
+                    left: 0;
+                    right: 0;
+                    z-index: 500;
+                }
+
+                #map {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                #map {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                /* LOADING */
+                .spinner {
+                    text-align: center;
+                    padding: 30px;
+                    padding: 24px;
+                    color: #94A3B8;
+                    font-size: 13px;
+                }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-title">
+            <div class="header-badge">⚡</div>
+            <div class="header-text">
+                <h1>DEPREM RADAR</h1>
+                <p id="live-indicator">● AFAD Canlı Akış</p>
+                <p id="live-indicator">● Canlı & Tarih Filtreli</p>
+            </div>
+        </div>
+        <button class="btn-refresh" onclick="fetchEarthquakes()">🔄 Yenile</button>
+        <button class="btn-refresh" onclick="loadData()">🔄 Yenile</button>
+    </header>
+
+    <!-- Content Views -->
+    <main id="list-view">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Son Depremler</div>
+                <div class="stat-title">Toplam Kayıt</div>
+                <div class="stat-val" id="stat-count" style="color: #38BDF8;">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">En Yüksek</div>
+                <div class="stat-val" id="stat-max" style="color: #F87171;">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Hissedilen (≥3)</div>
+                <div class="stat-val" id="stat-felt" style="color: #FBBF24;">-</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            <!-- Ülke veya İl/Konum Arama -->
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" id="searchInput" placeholder="İl, ilçe veya bölge ara..." oninput="applyFilters()">
+                <span>🌍</span>
+                <input type="text" id="searchInput"
+                    placeholder="Ülke adı (Örn: Türkiye, Japan, Greece) veya Şehir ara..." oninput="applyFilters()">
+            </div>
+            <div class="filter-pills">
+                <div class="pill active" onclick="setMagnitudeFilter(0, this)">Tümü</div>
+                <div class="pill" onclick="setMagnitudeFilter(2.0, this)">≥ 2.0</div>
+
+                <!-- Zaman Filtresi -->
+                <div class="filter-row">
+                    <div class="pill active" onclick="setTimeRange(7, this)">Son 7 Gün</div>
+                    <div class="pill" onclick="setTimeRange(1, this)">Son 24 Saat</div>
+                    <div class="pill" onclick="setTimeRange(14, this)">Son 14 Gün</div>
+                    <div class="pill" onclick="setTimeRange(30, this)">Son 30 Gün</div>
+                </div>
+
+                <!-- Kaynak & Büyüklük Filtreleri -->
+                <div class="filter-row">
+                    <div class="pill active" id="src-afad" onclick="setSource('afad', this)">AFAD (Türkiye)</div>
+                    <div class="pill" id="src-usgs" onclick="setSource('usgs', this)">USGS (Dünya Geneli)</div>
+                    <div class="pill" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
+                    <div class="pill" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
+                    <div class="pill" onclick="setMagnitudeFilter(5.0, this)">≥ 5.0</div>
+                </div>
+            </div>
+
+            <!-- Earthquake List -->
+            <div class="eq-list" id="eqContainer">
+                <div class="spinner">Veriler yükleniyor...</div>
+            </div>
+    </main>
+
+    <!-- Map View -->
+    <div id="map-view">
+        <div id="map"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="tab-list" onclick="switchTab('list')">
+            <span class="nav-icon">📋</span>
+            <span>Liste</span>
+        </div>
+        <div class="nav-item" id="tab-map" onclick="switchTab('map')">
+            <span class="nav-icon">🗺️</span>
+            <span>Harita</span>
+        </div>
+        <div class="nav-item" onclick="fetchEarthquakes()">
+            <div class="nav-item" onclick="loadData()">
+                <span class="nav-icon">⚡</span>
+                <span>Canlı Takip</span>
+            </div>
+    </nav>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let rawData = [];
+        let currentSource = 'afad';
+        let currentDays = 7;
+        let minMagnitude = 0;
+        let leafletMap = null;
+        let mapMarkers = [];
+
+        async function fetchEarthquakes() {
+            function setTimeRange(days, el) {
+                currentDays = days;
+                el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                el.classList.add('active');
+                loadData();
+            }
+
+            function setSource(src, el) {
+                currentSource = src;
+                document.getElementById('src-afad').classList.remove('active');
+                document.getElementById('src-usgs').classList.remove('active');
+                el.classList.add('active');
+                loadData();
+            }
+
+            function setMagnitudeFilter(mag, el) {
+                if (minMagnitude === mag) {
+                    minMagnitude = 0;
+                    el.classList.remove('active');
+                } else {
+                    minMagnitude = mag;
+                    el.classList.add('active');
+                }
+                applyFilters();
+            }
+
+            async function loadData() {
+                const container = document.getElementById('eqContainer');
+                container.innerHTML = `<div class="spinner">Son ${currentDays} günlük veriler alınıyor...</div>`;
+
+                try {
+                    const res = await fetch("https://deprem.afad.gov.tr/apiv2/event/filter?limit=100");
+                    const data = await res.json();
+                    rawData = data;
+                    if (currentSource === 'afad') {
+                        const now = new Date();
+                        const past = new Date();
+                        past.setDate(now.getDate() - currentDays);
+
+                        const startStr = past.toISOString().slice(0, 10) + "%2000:00:00";
+                        const endStr = now.toISOString().slice(0, 10) + "%2023:59:59";
+
+                        const res = await fetch(`https://deprem.afad.gov.tr/apiv2/event/filter?start=${startStr}&end=${endStr}&limit=250`);
+                        const data = await res.json();
+                        rawData = data.map(x => ({
+                            mag: parseFloat(x.magnitude) || 0,
+                            location: x.location || 'Konum belirtilmedi',
+                            country: x.country || 'Türkiye',
+                            province: x.province || '',
+                            district: x.district || '',
+                            depth: x.depth || '-',
+                            date: x.date ? x.date.replace('T', ' ') : '',
+                            lat: parseFloat(x.latitude),
+                            lng: parseFloat(x.longitude)
+                        }));
+                    } else {
+                        const past = new Date();
+                        past.setDate(past.getDate() - currentDays);
+                        const startTime = past.toISOString().slice(0, 10);
+
+                        const res = await fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=2.0&limit=250`);
+                        const data = await res.json();
+                        rawData = (data.features || []).map(f => {
+                            const coords = f.geometry?.coordinates || [];
+                            const place = f.properties.place || 'Global';
+                            let country = 'Dünya';
+                            if (place.includes(',')) {
+                                const parts = place.split(',');
+                                country = parts[parts.length - 1].trim();
+                            }
+
+                            return {
+                                mag: f.properties.mag || 0,
+                                location: place,
+                                country: country,
+                                province: '',
+                                district: '',
+                                depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
+                                date: new Date(f.properties.time).toLocaleString('tr-TR'),
+                                lat: coords.length > 1 ? coords[1] : 0,
+                                lng: coords.length > 0 ? coords[0] : 0
+                            };
+                        });
+                    }
+
+                    applyFilters();
+                } catch (err) {
+                    container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veri alınırken hata oluştu: ${err.message}</div>`;
+                    container.innerHTML = `<div class="spinner" style="color:#ef4444;">Hata: ${err.message}</div>`;
+                }
+            }
+
+            function getMagnitudeColor(mag) {
+                if (mag >= 5.0) return { bg: '#ef4444', label: 'Şiddetli' };
+                if (mag >= 4.0) return { bg: '#f97316', label: 'Orta+' };
+                if (mag >= 3.0) return { bg: '#eab308', label: 'Hafif+' };
+                return { bg: '#10b981', label: 'Küçük' };
+            }
+
+            function setMagnitudeFilter(mag, el) {
+                minMagnitude = mag;
+                document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
+                el.classList.add('active');
+                applyFilters();
+            }
+
+            function applyFilters() {
+                const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+                const filtered = rawData.filter(item => {
+                    const mag = parseFloat(item.magnitude) || 0;
+                    if (mag < minMagnitude) return false;
+                    if (item.mag < minMagnitude) return false;
+                    if (query) {
+                        const loc = (item.location || '').toLowerCase();
+                        const country = (item.country || '').toLowerCase();
+                        const prov = (item.province || '').toLowerCase();
+                        const dist = (item.district || '').toLowerCase();
+                        if (!loc.includes(query) && !prov.includes(query) && !dist.includes(query)) return false;
+                        if (!loc.includes(query) && !country.includes(query) && !prov.includes(query) && !dist.includes(query)) return false;
+                    }
+                    return true;
+                });
+
+                renderList(filtered);
+                updateStats(filtered);
+                if (leafletMap) updateMap(filtered);
+            }
+
+            function renderList(list) {
+                const container = document.getElementById('eqContainer');
+                if (!list.length) {
+                    container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem bulunamadı.</div>`;
+                    container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem kaydı bulunamadı.</div>`;
+                    return;
+                }
+
+                container.innerHTML = list.map(item => {
+                    const mag = parseFloat(item.magnitude) || 0;
+                    const { bg, label } = getMagnitudeColor(mag);
+                    const timeStr = item.date ? item.date.replace('T', ' ').substring(11, 19) : '--:--';
+                    const dateStr = item.date ? item.date.substring(0, 10) : '';
+
+                    const { bg, label } = getMagnitudeColor(item.mag);
+                    return `
+                <div class="eq-card">
+                    <div class="eq-badge" style="background: ${bg};">
+                        <span class="mag">${mag.toFixed(1)}</span>
+                        <span class="mag">${item.mag.toFixed(1)}</span>
+                        <span class="type">${label}</span>
+                    </div>
+                    <div class="eq-info">
+                        <div class="eq-location">${item.location || 'Bilinmeyen Konum'}</div>
+                        <div class="eq-location">${item.location}</div>
+                        <div class="eq-sub">
+                            <span>📍 ${item.depth} km Derinlik</span>
+                            <span>•</span>
+                            <span>${dateStr}</span>
+                            <span class="eq-country-tag">${item.country}</span>
+                            <span>📍 ${item.depth} km</span>
+                        </div>
+                    </div>
+                    <div class="eq-meta">
+                        ${timeStr}
+                        ${item.date}
+                    </div>
+                </div>`;
+                }).join('');
+            }
+
+            function updateStats(list) {
+                document.getElementById('stat-count').innerText = list.length;
+                if (list.length) {
+                    const maxMag = Math.max(...list.map(x => parseFloat(x.magnitude) || 0));
+                    const maxMag = Math.max(...list.map(x => x.mag));
+                    document.getElementById('stat-max').innerText = maxMag > 0 ? maxMag.toFixed(1) : '-';
+                    const felt = list.filter(x => (parseFloat(x.magnitude) || 0) >= 3.0).length;
+                    const felt = list.filter(x => x.mag >= 3.0).length;
+                    document.getElementById('stat-felt').innerText = felt;
+                } else {
+                    document.getElementById('stat-max').innerText = '-';
+                    document.getElementById('stat-felt').innerText = '0';
+                }
+            }
+
+            function switchTab(tab) {
+                const listView = document.getElementById('list-view');
+                const mapView = document.getElementById('map-view');
+                const tabList = document.getElementById('tab-list');
+                const tabMap = document.getElementById('tab-map');
+
+                if (tab === 'map') {
+                    listView.style.display = 'none';
+                    mapView.style.display = 'block';
+                    tabList.classList.remove('active');
+                    tabMap.classList.add('active');
+                    initMap();
+                } else {
+                    listView.style.display = 'block';
+                    mapView.style.display = 'none';
+                    tabList.classList.add('active');
+                    tabMap.classList.remove('active');
+                }
+            }
+
+            function initMap() {
+                if (!leafletMap) {
+                    leafletMap = L.map('map').setView([39.0, 35.0], 6);
+                    leafletMap = L.map('map').setView([39.0, 35.0], 5);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                        attribution: 'OpenStreetMap'
+                    }).addTo(leafletMap);
+                }
+                setTimeout(() => {
+                    leafletMap.invalidateSize();
+                    applyFilters();
+                }, 200);
+            }
+
+            function updateMap(list) {
+                mapMarkers.forEach(m => leafletMap.removeLayer(m));
+                mapMarkers = [];
+
+                list.forEach(item => {
+                    const lat = parseFloat(item.latitude);
+                    const lng = parseFloat(item.longitude);
+                    const mag = parseFloat(item.magnitude) || 0;
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        const { bg } = getMagnitudeColor(mag);
+                        const marker = L.circleMarker([lat, lng], {
+                            radius: Math.max(5, mag * 3.5),
+                            if(!isNaN(item.lat) && !isNaN(item.lng) && item.lat !== 0) {
+                                const { bg } = getMagnitudeColor(item.mag);
+                        const marker = L.circleMarker([item.lat, item.lng], {
+                            radius: Math.max(5, item.mag * 3.5),
+                            fillColor: bg,
+                            color: '#FFF',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).bindPopup(`<b>${item.location}</b><br>Büyüklük: ${mag.toFixed(1)}<br>Derinlik: ${item.depth} km<br>Tarih: ${item.date}`);
+                    }).bindPopup(`<b>${item.location}</b><br>Ülke: ${item.country}<br>Büyüklük: ${item.mag.toFixed(1)}<br>Derinlik: ${item.depth} km<br>Tarih: ${item.date}`);
+                marker.addTo(leafletMap);
+                mapMarkers.push(marker);
+            }
+        });
+        }
+
+        // Otomatik 30 saniyede bir güncelle
+        setInterval(fetchEarthquakes, 30000);
+        fetchEarthquakes();
+        loadData();
+    </script>
+</body>
+
+</html>

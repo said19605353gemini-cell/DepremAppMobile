@@ -1,0 +1,16 @@
+{
+  "name": "deprem-radar-capacitor",
+  "version": "1.0.0",
+  "description": "Deprem Radar Mobil Uygulaması",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo Built"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.3",
+    "@capacitor/core": "^6.2.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.3"
+  }
+}
