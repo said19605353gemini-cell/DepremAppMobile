@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Deprem Radar Mobil</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0B1120">
@@ -15,13 +17,16 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        html, body {
+
+        html,
+        body {
             background-color: #0B1120;
             color: #F8FAFC;
             width: 100%;
             height: 100%;
             overflow-x: hidden;
         }
+
         body {
             display: flex;
             justify-content: center;
@@ -54,12 +59,14 @@
             border-bottom: 1px solid #1E293B;
             width: 100%;
         }
+
         .header-title {
             display: flex;
             align-items: center;
             gap: 10px;
             min-width: 0;
         }
+
         .header-badge {
             background: #EF4444;
             color: white;
@@ -72,9 +79,11 @@
             justify-content: center;
             font-size: 16px;
         }
+
         .header-text {
             min-width: 0;
         }
+
         .header-text h1 {
             font-size: 15px;
             font-weight: 800;
@@ -82,11 +91,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .header-text p {
             font-size: 11px;
             color: #94A3B8;
             white-space: nowrap;
         }
+
         .btn-refresh {
             background: #1E293B;
             border: 1px solid #334155;
@@ -98,6 +109,7 @@
             cursor: pointer;
             white-space: nowrap;
         }
+
         .btn-refresh:active {
             transform: scale(0.96);
         }
@@ -110,6 +122,7 @@
             padding: 12px 16px 6px 16px;
             width: 100%;
         }
+
         .stat-card {
             background: #1E293B;
             border-radius: 10px;
@@ -118,6 +131,7 @@
             text-align: center;
             min-width: 0;
         }
+
         .stat-title {
             font-size: 9px;
             color: #94A3B8;
@@ -127,6 +141,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .stat-val {
             font-size: 18px;
             font-weight: 800;
@@ -144,6 +159,7 @@
             gap: 8px;
             width: 100%;
         }
+
         .search-box {
             display: flex;
             align-items: center;
@@ -153,6 +169,7 @@
             padding: 8px 12px;
             width: 100%;
         }
+
         .search-box input {
             background: transparent;
             border: none;
@@ -169,6 +186,7 @@
             flex-direction: column;
             gap: 5px;
         }
+
         .filter-group-title {
             font-size: 10px;
             color: #64748B;
@@ -176,12 +194,14 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .filter-wrap {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             width: 100%;
         }
+
         .pill {
             padding: 5px 10px;
             border-radius: 14px;
@@ -194,6 +214,7 @@
             user-select: none;
             transition: 0.15s ease;
         }
+
         .pill.active {
             background: #3B82F6;
             color: #FFF;
@@ -208,6 +229,7 @@
             gap: 8px;
             width: 100%;
         }
+
         .eq-card {
             background: #1E293B;
             border: 1px solid #334155;
@@ -219,6 +241,7 @@
             width: 100%;
             min-width: 0;
         }
+
         .eq-badge {
             width: 48px;
             height: 48px;
@@ -231,20 +254,24 @@
             color: white;
             font-weight: 800;
         }
+
         .eq-badge .mag {
             font-size: 17px;
             line-height: 1;
         }
+
         .eq-badge .type {
             font-size: 7px;
             text-transform: uppercase;
             opacity: 0.9;
             margin-top: 2px;
         }
+
         .eq-info {
             flex: 1;
             min-width: 0;
         }
+
         .eq-location {
             font-size: 13px;
             font-weight: 600;
@@ -253,6 +280,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .eq-sub {
             display: flex;
             align-items: center;
@@ -264,6 +292,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .eq-country-tag {
             background: #334155;
             color: #38BDF8;
@@ -273,6 +302,7 @@
             font-weight: 600;
             flex-shrink: 0;
         }
+
         .eq-meta {
             text-align: right;
             font-size: 11px;
@@ -297,6 +327,7 @@
             align-items: center;
             z-index: 1000;
         }
+
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -306,9 +337,11 @@
             font-size: 11px;
             cursor: pointer;
         }
+
         .nav-item.active {
             color: #38BDF8;
         }
+
         .nav-icon {
             font-size: 17px;
         }
@@ -325,7 +358,11 @@
             max-width: 600px;
             z-index: 500;
         }
-        #map { width: 100%; height: 100%; }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
 
         .spinner {
             text-align: center;
@@ -335,6 +372,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="app-shell">
@@ -369,13 +407,15 @@
                 <!-- Arama Kutusu -->
                 <div class="search-box">
                     <span>🔍</span>
-                    <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan)..." oninput="applyFilters()">
+                    <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan)..."
+                        oninput="applyFilters()">
                 </div>
 
                 <!-- Kaynak Seçimi -->
                 <div class="filter-group">
                     <div class="filter-wrap">
-                        <div class="pill active" id="src-afad" onclick="setSource('afad', this)">🇹🇷 AFAD (Türkiye)</div>
+                        <div class="pill active" id="src-afad" onclick="setSource('afad', this)">🇹🇷 AFAD (Türkiye)
+                        </div>
                         <div class="pill" id="src-usgs" onclick="setSource('usgs', this)">🌍 USGS (Dünya Geneli)</div>
                     </div>
                 </div>
@@ -477,60 +517,100 @@
 
             try {
                 if (currentSource === 'afad') {
-                    const now = new Date();
-                    const past = new Date();
-                    past.setDate(now.getDate() - currentDays);
+                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?limit=100`;
+                    if (currentDays > 1) {
+                        const now = new Date();
+                        const past = new Date();
+                        past.setDate(now.getDate() - currentDays);
+                        const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
+                        const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
+                        url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=100`;
+                        const now = new Date();
+                        const past = new Date();
+                        past.setDate(now.getDate() - currentDays);
 
-                    // Türkiye saati ve UTC formatı
-                    const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
-                    const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
+                        // Türkiye saati ve UTC formatı
+                        const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
+                        const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
 
-                    // Eğer 3 günden uzun seçilmişse ve minMagnitude seçilmemişse bile önemli olanları getirmek için minmag ekle veya limit artır
-                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
-                    if (minMagnitude > 0) {
-                        url += `&minmag=${minMagnitude}`;
-                    } else if (currentDays >= 7) {
-                        // 7 gün ve üzerinde küçük mikro-depremler listeyi boğmasın diye min 1.5'tan çeker
-                        url += `&minmag=1.5`;
+                        // Eğer 3 günden uzun seçilmişse ve minMagnitude seçilmemişse bile önemli olanları getirmek için minmag ekle veya limit artır
+                        let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
+                        if (minMagnitude > 0) {
+                            url += `&minmag=${minMagnitude}`;
+                        } else if (currentDays >= 7) {
+                            // 7 gün ve üzerinde küçük mikro-depremler listeyi boğmasın diye min 1.5'tan çeker
+                            url += `&minmag=1.5`;
+                        }
+
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 8000);
+                        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                        const res = await fetch(url, { signal: controller.signal });
+                        clearTimeout(timeoutId);
+
+                        const data = await res.json();
+                        rawData = (data || []).map(x => ({
+                            mag: parseFloat(x.magnitude) || 0,
+                            location: x.location || 'Konum belirtilmedi',
+                            country: x.country || 'Türkiye',
+                            province: x.province || '',
+                            district: x.district || '',
+                            depth: x.depth || '-',
+                            date: x.date ? x.date.replace('T', ' ').substring(0, 19) : '',
+                            lat: parseFloat(x.latitude),
+                            lng: parseFloat(x.longitude)
+                        }));
+                    } else {
+                        const past = new Date();
+                        past.setDate(past.getDate() - currentDays);
+                        const startTime = past.toISOString().slice(0, 10);
+                        const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=2.5&limit=100`;
+                        let minM = minMagnitude > 0 ? minMagnitude : 2.5;
+                        if (currentDays >= 30 && minMagnitude === 0) minM = 4.0; // 1 sene için büyükleri getirir
+                        const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
+
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        rawData = (data.features || []).map(f => {
+                            const coords = f.geometry?.coordinates || [];
+                            const place = f.properties.place || 'Global';
+                            let country = 'Dünya';
+                            if (place.includes(',')) {
+                                const parts = place.split(',');
+                                country = parts[parts.length - 1].trim();
+                            }
+
+                            return {
+                                mag: f.properties.mag || 0,
+                                location: place,
+                                country: country,
+                                province: '',
+                                district: '',
+                                depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
+                                date: new Date(f.properties.time).toLocaleString('tr-TR'),
+                                lat: coords.length > 1 ? coords[1] : 0,
+                                lng: coords.length > 0 ? coords[0] : 0
+                            };
+                        });
                     }
 
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    applyFilters();
+                } catch (err) {
+                    console.warn("Ana API baglanti hatasi, yedek deneniyor:", err);
+                    tryFallbackData();
+                }
+            }
 
-                    const res = await fetch(url, { signal: controller.signal });
-                    clearTimeout(timeoutId);
-
-                    const data = await res.json();
-                    rawData = (data || []).map(x => ({
-                        mag: parseFloat(x.magnitude) || 0,
-                        location: x.location || 'Konum belirtilmedi',
-                        country: x.country || 'Türkiye',
-                        province: x.province || '',
-                        district: x.district || '',
-                        depth: x.depth || '-',
-                        date: x.date ? x.date.replace('T', ' ').substring(0, 19) : '',
-                        lat: parseFloat(x.latitude),
-                        lng: parseFloat(x.longitude)
-                    }));
-                } else {
-                    const past = new Date();
-                    past.setDate(past.getDate() - currentDays);
-                    const startTime = past.toISOString().slice(0, 10);
-                    let minM = minMagnitude > 0 ? minMagnitude : 2.5;
-                    if (currentDays >= 30 && minMagnitude === 0) minM = 4.0; // 1 sene için büyükleri getirir
-                    const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
-
-                    const res = await fetch(url);
+        async function tryFallbackData() {
+                const container = document.getElementById('eqContainer');
+                try {
+                    const res = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
                     const data = await res.json();
                     rawData = (data.features || []).map(f => {
                         const coords = f.geometry?.coordinates || [];
                         const place = f.properties.place || 'Global';
-                        let country = 'Dünya';
-                        if (place.includes(',')) {
-                            const parts = place.split(',');
-                            country = parts[parts.length - 1].trim();
-                        }
-
+                        let country = place.includes(',') ? place.split(',').pop().trim() : 'Global';
                         return {
                             mag: f.properties.mag || 0,
                             location: place,
@@ -543,81 +623,88 @@
                             lng: coords.length > 0 ? coords[0] : 0
                         };
                     });
+                    applyFilters();
+                } catch (e) {
+                    container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. Bağlantıyı kontrol ediniz.</div>`;
                 }
-
-                applyFilters();
-            } catch (err) {
-                console.warn("Ana API baglanti hatasi, yedek deneniyor:", err);
-                tryFallbackData();
             }
-        }
 
-        async function tryFallbackData() {
-            const container = document.getElementById('eqContainer');
-            try {
-                const res = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
-                const data = await res.json();
-                rawData = (data.features || []).map(f => {
-                    const coords = f.geometry?.coordinates || [];
-                    const place = f.properties.place || 'Global';
-                    let country = place.includes(',') ? place.split(',').pop().trim() : 'Global';
-                    return {
-                        mag: f.properties.mag || 0,
-                        location: place,
-                        country: country,
-                        province: '',
-                        district: '',
-                        depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
-                        date: new Date(f.properties.time).toLocaleString('tr-TR'),
-                        lat: coords.length > 1 ? coords[1] : 0,
-                        lng: coords.length > 0 ? coords[0] : 0
-                    };
+            function getMagnitudeColor(mag) {
+                if (mag >= 7.0) return { bg: '#b91c1c', label: 'Yıkıcı' };
+                if (mag >= 5.0) return { bg: '#ef4444', label: 'Şiddetli' };
+                if (mag >= 4.0) return { bg: '#f97316', label: 'Orta+' };
+                if (mag >= 3.0) return { bg: '#eab308', label: 'Hafif+' };
+                return { bg: '#10b981', label: 'Küçük' };
+            }
+
+            function applyFilters() {
+                const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+                const filtered = rawData.filter(item => {
+                    if (item.mag < minMagnitude) return false;
+                    if (query) {
+                        const loc = (item.location || '').toLowerCase();
+                        const country = (item.country || '').toLowerCase();
+                        const prov = (item.province || '').toLowerCase();
+                        const dist = (item.district || '').toLowerCase();
+                        if (!loc.includes(query) && !country.includes(query) && !prov.includes(query) && !dist.includes(query)) return false;
+                    }
+                    return true;
                 });
-                applyFilters();
-            } catch (e) {
-                container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. Bağlantıyı kontrol ediniz.</div>`;
+
+                renderList(filtered);
+                updateStats(filtered);
+                if (leafletMap) updateMap(filtered);
             }
-        }
 
-        function getMagnitudeColor(mag) {
-            if (mag >= 7.0) return { bg: '#b91c1c', label: 'Yıkıcı' };
-            if (mag >= 5.0) return { bg: '#ef4444', label: 'Şiddetli' };
-            if (mag >= 4.0) return { bg: '#f97316', label: 'Orta+' };
-            if (mag >= 3.0) return { bg: '#eab308', label: 'Hafif+' };
-            return { bg: '#10b981', label: 'Küçük' };
-        }
+            function formatDateInfo(dateRaw) {
+                if (!dateRaw) return { fullDate: '-', trTime: '--:--' };
+                try {
+                    // AFAD Formatı: "2026-11-22 18:52:20" veya "2026-11-22T18:52:20"
+                    if (typeof dateRaw === 'string' && (dateRaw.includes('-') || dateRaw.includes(' '))) {
+                        const clean = dateRaw.replace('T', ' ');
+                        const parts = clean.split(' ');
+                        if (parts.length >= 2) {
+                            const ymd = parts[0].split('-');
+                            if (ymd.length === 3) {
+                                const dStr = `${ymd[2]}.${ymd[1]}.${ymd[0]}`;
+                                return { fullDate: dStr, trTime: parts[1].substring(0, 5) };
+                            }
+                        }
+                    }
 
-        function applyFilters() {
-            const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-            const filtered = rawData.filter(item => {
-                if (item.mag < minMagnitude) return false;
-                if (query) {
-                    const loc = (item.location || '').toLowerCase();
-                    const country = (item.country || '').toLowerCase();
-                    const prov = (item.province || '').toLowerCase();
-                    const dist = (item.district || '').toLowerCase();
-                    if (!loc.includes(query) && !country.includes(query) && !prov.includes(query) && !dist.includes(query)) return false;
+                    // Global USGS formatı (JavaScript Date)
+                    let d = new Date(dateRaw);
+                    if (!isNaN(d.getTime())) {
+                        const day = String(d.getDate()).padStart(2, '0');
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const year = d.getFullYear();
+                        const hours = String(d.getHours()).padStart(2, '0');
+                        const mins = String(d.getMinutes()).padStart(2, '0');
+                        return {
+                            fullDate: `${day}.${month}.${year}`,
+                            trTime: `${hours}:${mins}`
+                        };
+                    }
+                    return { fullDate: dateRaw, trTime: '' };
+                } catch (e) {
+                    return { fullDate: dateRaw, trTime: '' };
                 }
-                return true;
-            });
-
-            renderList(filtered);
-            updateStats(filtered);
-            if (leafletMap) updateMap(filtered);
-        }
-
-        function renderList(list) {
-            const container = document.getElementById('eqContainer');
-            if (!list.length) {
-                container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem bulunamadı.</div>`;
-                return;
             }
 
-            const displayList = list.slice(0, 50);
+            function renderList(list) {
+                const container = document.getElementById('eqContainer');
+                if (!list.length) {
+                    container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem bulunamadı.</div>`;
+                    return;
+                }
 
-            container.innerHTML = displayList.map(item => {
-                const { bg, label } = getMagnitudeColor(item.mag);
-                return `
+                const displayList = list.slice(0, 60);
+
+                container.innerHTML = displayList.map(item => {
+                    const { bg, label } = getMagnitudeColor(item.mag);
+                    const { fullDate, trTime } = formatDateInfo(item.date);
+
+                    return `
                 <div class="eq-card">
                     <div class="eq-badge" style="background: ${bg};">
                         <span class="mag">${item.mag.toFixed(1)}</span>
@@ -628,83 +715,87 @@
                         <div class="eq-sub">
                             <span class="eq-country-tag">${item.country}</span>
                             <span>📍 ${item.depth} km</span>
+                            <span>•</span>
+                            <span>📅 ${fullDate}</span>
                         </div>
                     </div>
                     <div class="eq-meta">
-                        ${item.date.length > 10 ? item.date.substring(5, 16) : item.date}
+                        <div style="font-weight: 700; color: #38BDF8; font-size: 13px;">${trTime}</div>
+                        <div style="font-size: 9px; color: #64748B;">TR Saati</div>
                     </div>
                 </div>`;
-            }).join('');
-        }
-
-        function updateStats(list) {
-            document.getElementById('stat-count').innerText = list.length;
-            if (list.length) {
-                const maxMag = Math.max(...list.map(x => x.mag));
-                document.getElementById('stat-max').innerText = maxMag > 0 ? maxMag.toFixed(1) : '-';
-                const felt = list.filter(x => x.mag >= 3.0).length;
-                document.getElementById('stat-felt').innerText = felt;
-            } else {
-                document.getElementById('stat-max').innerText = '-';
-                document.getElementById('stat-felt').innerText = '0';
+                }).join('');
             }
-        }
 
-        function switchTab(tab) {
-            const listView = document.getElementById('list-view');
-            const mapView = document.getElementById('map-view');
-            const tabList = document.getElementById('tab-list');
-            const tabMap = document.getElementById('tab-map');
-
-            if (tab === 'map') {
-                listView.style.display = 'none';
-                mapView.style.display = 'block';
-                tabList.classList.remove('active');
-                tabMap.classList.add('active');
-                initMap();
-            } else {
-                listView.style.display = 'block';
-                mapView.style.display = 'none';
-                tabList.classList.add('active');
-                tabMap.classList.remove('active');
-            }
-        }
-
-        function initMap() {
-            if (!leafletMap) {
-                leafletMap = L.map('map').setView([39.0, 35.0], 5);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: 'OpenStreetMap'
-                }).addTo(leafletMap);
-            }
-            setTimeout(() => {
-                leafletMap.invalidateSize();
-                applyFilters();
-            }, 200);
-        }
-
-        function updateMap(list) {
-            mapMarkers.forEach(m => leafletMap.removeLayer(m));
-            mapMarkers = [];
-
-            list.slice(0, 80).forEach(item => {
-                if (!isNaN(item.lat) && !isNaN(item.lng) && item.lat !== 0) {
-                    const { bg } = getMagnitudeColor(item.mag);
-                    const marker = L.circleMarker([item.lat, item.lng], {
-                        radius: Math.max(5, item.mag * 3.5),
-                        fillColor: bg,
-                        color: '#FFF',
-                        weight: 1,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    }).bindPopup(`<b>${item.location}</b><br>Ülke: ${item.country}<br>Büyüklük: ${item.mag.toFixed(1)}<br>Derinlik: ${item.depth} km<br>Tarih: ${item.date}`);
-                    marker.addTo(leafletMap);
-                    mapMarkers.push(marker);
+            function updateStats(list) {
+                document.getElementById('stat-count').innerText = list.length;
+                if (list.length) {
+                    const maxMag = Math.max(...list.map(x => x.mag));
+                    document.getElementById('stat-max').innerText = maxMag > 0 ? maxMag.toFixed(1) : '-';
+                    const felt = list.filter(x => x.mag >= 3.0).length;
+                    document.getElementById('stat-felt').innerText = felt;
+                } else {
+                    document.getElementById('stat-max').innerText = '-';
+                    document.getElementById('stat-felt').innerText = '0';
                 }
-            });
-        }
+            }
 
-        loadData();
+            function switchTab(tab) {
+                const listView = document.getElementById('list-view');
+                const mapView = document.getElementById('map-view');
+                const tabList = document.getElementById('tab-list');
+                const tabMap = document.getElementById('tab-map');
+
+                if (tab === 'map') {
+                    listView.style.display = 'none';
+                    mapView.style.display = 'block';
+                    tabList.classList.remove('active');
+                    tabMap.classList.add('active');
+                    initMap();
+                } else {
+                    listView.style.display = 'block';
+                    mapView.style.display = 'none';
+                    tabList.classList.add('active');
+                    tabMap.classList.remove('active');
+                }
+            }
+
+            function initMap() {
+                if (!leafletMap) {
+                    leafletMap = L.map('map').setView([39.0, 35.0], 5);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                        attribution: 'OpenStreetMap'
+                    }).addTo(leafletMap);
+                }
+                setTimeout(() => {
+                    leafletMap.invalidateSize();
+                    applyFilters();
+                }, 200);
+            }
+
+            function updateMap(list) {
+                mapMarkers.forEach(m => leafletMap.removeLayer(m));
+                mapMarkers = [];
+
+                list.slice(0, 80).forEach(item => {
+                    if (!isNaN(item.lat) && !isNaN(item.lng) && item.lat !== 0) {
+                        const { bg } = getMagnitudeColor(item.mag);
+                        const marker = L.circleMarker([item.lat, item.lng], {
+                            radius: Math.max(5, item.mag * 3.5),
+                            fillColor: bg,
+                            color: '#FFF',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).bindPopup(`<b>${item.location}</b><br>Ülke: ${item.country}<br>Büyüklük: ${item.mag.toFixed(1)}<br>Derinlik: ${item.depth} km<br>Tarih: ${item.date}`);
+                        marker.addTo(leafletMap);
+                        mapMarkers.push(marker);
+                    }
+                });
+            }
+
+            loadData();
     </script>
 </body>
+
 </html>
