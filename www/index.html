@@ -959,7 +959,7 @@
             try {
                 // 1 Seneden uzun (3 sene, 5 sene, 10 sene) geçmiş arşivi AFAD API'sinde bulunmadığı için
                 // veya AFAD erişilemediğinde doğrudan USGS küresel & bölgesel sismik arşivinden çekilir.
-                if (currentSource === 'afad' && currentDays <= 45) {
+                if (currentSource === 'afad') {
                     const now = new Date();
                     const past = new Date();
                     past.setDate(now.getDate() - currentDays);
@@ -970,15 +970,15 @@
                     let threshold = 0;
                     if (minMagnitude > 0) {
                         threshold = minMagnitude;
-                    } else if (currentDays >= 45) {
+                    } else if (currentDays >= 1095) {
+                        threshold = 4.0;
+                    } else if (currentDays >= 365) {
                         threshold = 3.5;
+                    } else if (currentDays >= 90) {
+                        threshold = 3.0;
                     } else if (currentDays >= 30) {
-                        threshold = 3.2;
-                    } else if (currentDays >= 15) {
-                        threshold = 2.8;
+                        threshold = 2.5;
                     } else if (currentDays >= 7) {
-                        threshold = 2.4;
-                    } else if (currentDays >= 3) {
                         threshold = 2.0;
                     }
 
@@ -1005,7 +1005,8 @@
                         depth: x.depth || '-',
                         date: x.date ? x.date.replace('T', ' ').substring(0, 19) : '',
                         lat: parseFloat(x.latitude),
-                        lng: parseFloat(x.longitude)
+                        lng: parseFloat(x.longitude),
+                        source: 'AFAD'
                     }));
                 } else {
                     // USGS veya 1-10 senelik derin geçmiş arşivi (Kahramanmaraş 7.8, Elazığ 6.8 vs. eksiksiz gelir)
