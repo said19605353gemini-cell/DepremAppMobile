@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Deprem Radar Mobil</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0B1120">
@@ -15,6 +17,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
             background-color: #0B1120;
             color: #F8FAFC;
@@ -40,11 +43,13 @@
             justify-content: space-between;
             border-bottom: 1px solid #1E293B;
         }
+
         .header-title {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .header-badge {
             background: #EF4444;
             color: white;
@@ -57,15 +62,18 @@
             font-size: 18px;
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
         }
+
         .header-text h1 {
             font-size: 16px;
             font-weight: 800;
             letter-spacing: 0.5px;
         }
+
         .header-text p {
             font-size: 11px;
             color: #94A3B8;
         }
+
         .btn-refresh {
             background: #1E293B;
             border: 1px solid #334155;
@@ -76,6 +84,7 @@
             font-weight: 600;
             cursor: pointer;
         }
+
         .btn-refresh:active {
             transform: scale(0.96);
         }
@@ -87,6 +96,7 @@
             gap: 8px;
             padding: 12px 16px 6px 16px;
         }
+
         .stat-card {
             background: #1E293B;
             border-radius: 12px;
@@ -94,12 +104,14 @@
             border: 1px solid #334155;
             text-align: center;
         }
+
         .stat-title {
             font-size: 10px;
             color: #94A3B8;
             font-weight: 600;
             text-transform: uppercase;
         }
+
         .stat-val {
             font-size: 20px;
             font-weight: 800;
@@ -113,6 +125,7 @@
             flex-direction: column;
             gap: 8px;
         }
+
         .search-box {
             display: flex;
             align-items: center;
@@ -121,6 +134,7 @@
             border-radius: 10px;
             padding: 9px 12px;
         }
+
         .search-box input {
             background: transparent;
             border: none;
@@ -130,6 +144,7 @@
             font-size: 13px;
             margin-left: 8px;
         }
+
         .filter-row {
             display: flex;
             gap: 6px;
@@ -137,7 +152,11 @@
             scrollbar-width: none;
             padding-bottom: 2px;
         }
-        .filter-row::-webkit-scrollbar { display: none; }
+
+        .filter-row::-webkit-scrollbar {
+            display: none;
+        }
+
         .pill {
             padding: 6px 12px;
             border-radius: 20px;
@@ -149,6 +168,7 @@
             white-space: nowrap;
             cursor: pointer;
         }
+
         .pill.active {
             background: #3B82F6;
             color: #FFF;
@@ -162,6 +182,7 @@
             flex-direction: column;
             gap: 8px;
         }
+
         .eq-card {
             background: #1E293B;
             border: 1px solid #334155;
@@ -171,6 +192,7 @@
             align-items: center;
             gap: 12px;
         }
+
         .eq-badge {
             min-width: 52px;
             height: 52px;
@@ -182,20 +204,24 @@
             color: white;
             font-weight: 800;
         }
+
         .eq-badge .mag {
             font-size: 18px;
             line-height: 1;
         }
+
         .eq-badge .type {
             font-size: 8px;
             text-transform: uppercase;
             opacity: 0.9;
             margin-top: 3px;
         }
+
         .eq-info {
             flex: 1;
             min-width: 0;
         }
+
         .eq-location {
             font-size: 13px;
             font-weight: 600;
@@ -204,6 +230,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .eq-sub {
             display: flex;
             align-items: center;
@@ -212,6 +239,7 @@
             font-size: 11px;
             color: #94A3B8;
         }
+
         .eq-country-tag {
             background: #334155;
             color: #38BDF8;
@@ -220,6 +248,7 @@
             font-size: 10px;
             font-weight: 600;
         }
+
         .eq-meta {
             text-align: right;
             font-size: 11px;
@@ -243,6 +272,7 @@
             align-items: center;
             z-index: 1000;
         }
+
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -252,9 +282,11 @@
             font-size: 11px;
             cursor: pointer;
         }
+
         .nav-item.active {
             color: #38BDF8;
         }
+
         .nav-icon {
             font-size: 18px;
         }
@@ -271,7 +303,11 @@
             max-width: 650px;
             z-index: 500;
         }
-        #map { width: 100%; height: 100%; }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
 
         .spinner {
             text-align: center;
@@ -281,6 +317,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -313,16 +350,18 @@
         <div class="filter-section">
             <div class="search-box">
                 <span>🔍</span>
-                <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan, Greece)..." oninput="applyFilters()">
+                <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan, Greece)..."
+                    oninput="applyFilters()">
             </div>
 
-            <!-- Zaman Aralığı (3 günden 15 güne kadar) -->
+            <!-- Genişletilmiş Zaman Aralığı -->
             <div class="filter-row">
                 <div class="pill active" onclick="setTimeRange(7, this)">7 Gün</div>
                 <div class="pill" onclick="setTimeRange(3, this)">3 Gün</div>
-                <div class="pill" onclick="setTimeRange(5, this)">5 Gün</div>
-                <div class="pill" onclick="setTimeRange(10, this)">10 Gün</div>
                 <div class="pill" onclick="setTimeRange(15, this)">15 Gün</div>
+                <div class="pill" onclick="setTimeRange(30, this)">30 Gün</div>
+                <div class="pill" onclick="setTimeRange(45, this)">45 Gün</div>
+                <div class="pill" onclick="setTimeRange(365, this)">1 Sene</div>
             </div>
 
             <!-- Kaynak & Büyüklük Seçici (3.0'dan başlayarak) -->
@@ -626,4 +665,5 @@
         loadData();
     </script>
 </body>
+
 </html>
