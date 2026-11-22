@@ -474,7 +474,7 @@
             pointer-events: none;
         }
         /* Harita Koyu Mod Efekti (API Key Istemez) */
-    .leaflet-tile { filter: brightness(0.65) invert(1) contrast(2.2) hue-rotate(190deg) saturate(0.4); }
+    /* Esri Native Dark Canvas */
     .leaflet-container { background: #0b0f19 !important; }
   </style>
 </head>
@@ -1465,7 +1465,7 @@
         function initMap() {
             if (!leafletMap) {
                 leafletMap = L.map('map').setView([39.0, 35.0], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
                     attribution: 'OpenStreetMap'
                 }).addTo(leafletMap);
             }
