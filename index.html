@@ -702,44 +702,73 @@
         function formatDateInfo(dateRaw, lng) {
             if (!dateRaw) return { fullDate: '-', trTime: '--:--', localTime: '--:--' };
             try {
-                // AFAD Formatı: "2026-11-22 20:12:02" veya "2026-11-22T20:12:02"
-                // AFAD doğrudan doğru Türkiye saatini verir.
+                // 1) "22.11.2026 23:15:57" Formatı (Türkçe yerel string)
+                if (typeof dateRaw === 'string' && dateRaw.includes('.')) {
+                    const parts = dateRaw.split(' ');
+                    if (parts.length >= 2) {
+                        const dmy = parts[0].split('.');
+                        const hms = parts[1].split(':');
+                        if (dmy.length === 3 && hms.length >= 2) {
+                            const day = dmy[0];
+                            const month = dmy[1];
+                            const year = dmy[2];
+                            const trHour = hms[0];
+                            const trMin = hms[1];
+
+                            let localOffsetHours = 3;
+                            if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
+                                localOffsetHours = Math.round(lng / 15);
+                            }
+                            const diffHours = localOffsetHours - 3;
+                            let locH = (parseInt(trHour) + diffHours) % 24;
+                            if (locH < 0) locH += 24;
+                            const localHourStr = String(locH).padStart(2, '0');
+
+                            return {
+                                fullDate: `${day}.${month}.${year}`,
+                                trTime: `${trHour}:${trMin}`,
+                                localTime: `${localHourStr}:${trMin}`
+                            };
+                        }
+                    }
+                }
+
+                // 2) AFAD Formatı: "2026-11-22 20:12:02" veya "2026-11-22T20:12:02"
                 if (typeof dateRaw === 'string' && dateRaw.includes('-')) {
                     const clean = dateRaw.replace('T', ' ');
                     const parts = clean.split(' ');
                     if (parts.length >= 2) {
-                        const ymd = parts[0].split('-'); // [2026, 11, 22]
-                        const hms = parts[1].split(':'); // [20, 12, 02]
+                        const ymd = parts[0].split('-');
+                        const hms = parts[1].split(':');
+                        if (ymd.length === 3 && hms.length >= 2) {
+                            const year = ymd[0];
+                            const month = ymd[1];
+                            const day = ymd[2];
+                            const trHour = hms[0];
+                            const trMin = hms[1];
 
-                        const year = ymd[0];
-                        const month = ymd[1];
-                        const day = ymd[2];
-                        const trHour = hms[0];
-                        const trMin = hms[1];
+                            let localOffsetHours = 3;
+                            if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
+                                localOffsetHours = Math.round(lng / 15);
+                            }
+                            const diffHours = localOffsetHours - 3;
+                            let locH = (parseInt(trHour) + diffHours) % 24;
+                            if (locH < 0) locH += 24;
+                            const localHourStr = String(locH).padStart(2, '0');
 
-                        // Yerel saat hesabı: Türkiye UTC+3'tür.
-                        let localOffsetHours = 3;
-                        if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
-                            localOffsetHours = Math.round(lng / 15);
+                            return {
+                                fullDate: `${day}.${month}.${year}`,
+                                trTime: `${trHour}:${trMin}`,
+                                localTime: `${localHourStr}:${trMin}`
+                            };
                         }
-                        const diffHours = localOffsetHours - 3;
-                        let locH = (parseInt(trHour) + diffHours) % 24;
-                        if (locH < 0) locH += 24;
-                        const localHourStr = String(locH).padStart(2, '0');
-
-                        return {
-                            fullDate: `${day}.${month}.${year}`,
-                            trTime: `${trHour}:${trMin}`,
-                            localTime: `${localHourStr}:${trMin}`
-                        };
                     }
                 }
 
-                // USGS Unix Epoch Timestamp veya standart Date
+                // 3) USGS Unix Epoch Timestamp (Örn: 1795378557580)
                 let d = new Date(dateRaw);
                 if (!isNaN(d.getTime())) {
                     const utcMs = d.getTime();
-                    // Türkiye Saati: UTC + 3
                     const trDate = new Date(utcMs + 3 * 3600 * 1000);
 
                     const day = String(trDate.getUTCDate()).padStart(2, '0');
@@ -748,7 +777,6 @@
                     const trHour = String(trDate.getUTCHours()).padStart(2, '0');
                     const trMin = String(trDate.getUTCMinutes()).padStart(2, '0');
 
-                    // Yerel boylam saati
                     let localOffsetHours = 3;
                     if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
                         localOffsetHours = Math.round(lng / 15);
