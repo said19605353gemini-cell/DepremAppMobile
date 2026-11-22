@@ -950,10 +950,13 @@
 
         async function loadData() {
             const container = document.getElementById('eqContainer');
-            container.innerHTML = `<div class="spinner">Sismik veriler alınıyor, lütfen bekleyin...</div>`;
+            const t = i18n[currentLang] || i18n.tr;
+            container.innerHTML = `<div class="spinner">${t.loading}</div>`;
 
             try {
-                if (currentSource === 'afad') {
+                // 1 Seneden uzun (3 sene, 5 sene, 10 sene) geçmiş arşivi AFAD API'sinde bulunmadığı için
+                // veya AFAD erişilemediğinde doğrudan USGS küresel & bölgesel sismik arşivinden çekilir.
+                if (currentSource === 'afad' && currentDays <= 45) {
                     const now = new Date();
                     const past = new Date();
                     past.setDate(now.getDate() - currentDays);
@@ -961,30 +964,19 @@
                     const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
                     const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
 
-                    // Gün aralığına göre akıllı büyüklük eşiği:
                     let threshold = 0;
                     if (minMagnitude > 0) {
                         threshold = minMagnitude;
-                    } else if (currentDays >= 3650) {
-                        threshold = 5.0; // 10 sene için yıkıcı/büyük depremler
-                    } else if (currentDays >= 1825) {
-                        threshold = 4.8; // 5 sene için
-                    } else if (currentDays >= 1095) {
-                        threshold = 4.5; // 3 sene için
-                    } else if (currentDays >= 365) {
-                        threshold = 4.0; // 1 sene için büyük sarsıntılar
-                        threshold = 4.0; // 1 sene için
                     } else if (currentDays >= 45) {
-                        threshold = 3.5; // 45 gün için
+                        threshold = 3.5;
                     } else if (currentDays >= 30) {
-                        threshold = 3.2; // 30 gün için (10, 13, 14, 15, 17 Kasım gün gün yayılır)
-                        threshold = 3.2; // 30 gün için
+                        threshold = 3.2;
                     } else if (currentDays >= 15) {
-                        threshold = 2.8; // 15 gün için
+                        threshold = 2.8;
                     } else if (currentDays >= 7) {
-                        threshold = 2.4; // 7 gün için
+                        threshold = 2.4;
                     } else if (currentDays >= 3) {
-                        threshold = 2.0; // 3 gün için
+                        threshold = 2.0;
                     }
 
                     let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
@@ -993,13 +985,15 @@
                     }
 
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    const timeoutId = setTimeout(() => controller.abort(), 9000);
 
                     const res = await fetch(url, { signal: controller.signal });
                     clearTimeout(timeoutId);
 
                     const data = await res.json();
-                    rawData = (data || []).map(x => ({
+                    if (!data || data.length === 0) throw new Error("AFAD boş veri");
+
+                    rawData = data.map(x => ({
                         mag: parseFloat(x.magnitude) || 0,
                         location: x.location || 'Konum belirtilmedi',
                         country: x.country || 'Türkiye',
@@ -1011,12 +1005,22 @@
                         lng: parseFloat(x.longitude)
                     }));
                 } else {
+                    // USGS veya 1-10 senelik derin geçmiş arşivi (Kahramanmaraş 7.8, Elazığ 6.8 vs. eksiksiz gelir)
                     const past = new Date();
                     past.setDate(past.getDate() - currentDays);
                     const startTime = past.toISOString().slice(0, 10);
+
                     let minM = minMagnitude > 0 ? minMagnitude : 2.5;
-                    if (currentDays >= 30 && minMagnitude === 0) minM = 4.0;
-                    const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
+                    if (currentDays >= 3650 && minMagnitude === 0) minM = 4.5;
+                    else if (currentDays >= 1095 && minMagnitude === 0) minM = 4.0;
+                    else if (currentDays >= 365 && minMagnitude === 0) minM = 3.5;
+                    else if (currentDays >= 30 && minMagnitude === 0) minM = 3.0;
+
+                    let url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
+                    if (currentSource === 'afad') {
+                        // Türkiye ve yakın çevresi koordinat alanı
+                        url += `&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45`;
+                    }
 
                     const res = await fetch(url);
                     const data = await res.json();
@@ -1027,6 +1031,8 @@
                         if (place.includes(',')) {
                             const parts = place.split(',');
                             country = parts[parts.length - 1].trim();
+                        } else if (place.includes('Turkey') || place.includes('Kahramanmaras')) {
+                            country = 'Türkiye';
                         }
 
                         return {
@@ -1036,7 +1042,7 @@
                             province: '',
                             district: '',
                             depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
-                            date: f.properties.time, // epoch ms doğrudan sayı olarak saklanır
+                            date: f.properties.time,
                             lat: coords.length > 1 ? coords[1] : 0,
                             lng: coords.length > 0 ? coords[0] : 0
                         };
@@ -1045,7 +1051,7 @@
 
                 applyFilters();
             } catch (err) {
-                console.warn("Ana API baglanti hatasi, yedek deneniyor:", err);
+                console.warn("Ana veri çekilemedi, yedek arşive geçiliyor:", err);
                 tryFallbackData();
             }
         }
