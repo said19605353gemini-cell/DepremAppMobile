@@ -460,7 +460,7 @@
                     </div>
                 </div>
 
-                <!-- Zaman Aralığı (Otomatik Alt Satıra Geçer) -->
+                <!-- Zaman Aralığı (Genişletilmiş Tarih Seçenekleri) -->
                 <div class="filter-group">
                     <span class="filter-group-title">Tarih Aralığı:</span>
                     <div class="filter-wrap" id="timeFilters">
@@ -470,6 +470,9 @@
                         <div class="pill" onclick="setTimeRange(30, this)">30 Gün</div>
                         <div class="pill" onclick="setTimeRange(45, this)">45 Gün</div>
                         <div class="pill" onclick="setTimeRange(365, this)">1 Sene</div>
+                        <div class="pill" onclick="setTimeRange(1095, this)">3 Sene</div>
+                        <div class="pill" onclick="setTimeRange(1825, this)">5 Sene</div>
+                        <div class="pill" onclick="setTimeRange(3650, this)">10 Sene</div>
                     </div>
                 </div>
 
@@ -587,12 +590,18 @@
                     let threshold = 0;
                     if (minMagnitude > 0) {
                         threshold = minMagnitude;
+                    } else if (currentDays >= 3650) {
+                        threshold = 5.0; // 10 sene için yıkıcı/büyük depremler
+                    } else if (currentDays >= 1825) {
+                        threshold = 4.8; // 5 sene için
+                    } else if (currentDays >= 1095) {
+                        threshold = 4.5; // 3 sene için
                     } else if (currentDays >= 365) {
-                        threshold = 4.0; // 1 sene için büyük sarsıntılar
+                        threshold = 4.0; // 1 sene için
                     } else if (currentDays >= 45) {
                         threshold = 3.5; // 45 gün için
                     } else if (currentDays >= 30) {
-                        threshold = 3.2; // 30 gün için (10, 13, 14, 15, 17 Kasım gün gün yayılır)
+                        threshold = 3.2; // 30 gün için
                     } else if (currentDays >= 15) {
                         threshold = 2.8; // 15 gün için
                     } else if (currentDays >= 7) {
