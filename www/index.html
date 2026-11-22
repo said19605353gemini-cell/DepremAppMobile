@@ -236,10 +236,41 @@
             border-radius: 12px;
             padding: 10px 12px;
             display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .eq-card-header {
+            display: flex;
             align-items: center;
             gap: 12px;
             width: 100%;
-            min-width: 0;
+        }
+
+        .eq-details {
+            display: none;
+            padding-top: 8px;
+            border-top: 1px dashed #334155;
+            font-size: 12px;
+            color: #CBD5E1;
+            line-height: 1.5;
+        }
+
+        .eq-card.expanded .eq-details {
+            display: block;
+        }
+
+        .eq-card.expanded .eq-location {
+            white-space: normal;
+        }
+
+        .eq-card.expanded .eq-sub {
+            white-space: normal;
+            flex-wrap: wrap;
         }
 
         .eq-badge {
@@ -704,28 +735,40 @@
 
             const displayList = list.slice(0, 60);
 
-            container.innerHTML = displayList.map(item => {
+            container.innerHTML = displayList.map((item, idx) => {
                 const { bg, label } = getMagnitudeColor(item.mag);
                 const { fullDate, trTime, localTime } = formatDateInfo(item.date, item.lng);
 
                 return `
-                <div class="eq-card">
-                    <div class="eq-badge" style="background: ${bg};">
-                        <span class="mag">${item.mag.toFixed(1)}</span>
-                        <span class="type">${label}</span>
-                    </div>
-                    <div class="eq-info">
-                        <div class="eq-location">${item.location}</div>
-                        <div class="eq-sub">
-                            <span class="eq-country-tag">${item.country}</span>
-                            <span>📍 ${item.depth} km</span>
-                            <span>•</span>
-                            <span>📅 ${fullDate}</span>
+                <div class="eq-card" onclick="this.classList.toggle('expanded')">
+                    <div class="eq-card-header">
+                        <div class="eq-badge" style="background: ${bg};">
+                            <span class="mag">${item.mag.toFixed(1)}</span>
+                            <span class="type">${label}</span>
+                        </div>
+                        <div class="eq-info">
+                            <div class="eq-location">${item.location}</div>
+                            <div class="eq-sub">
+                                <span class="eq-country-tag">${item.country}</span>
+                                <span>📍 ${item.depth} km</span>
+                                <span>•</span>
+                                <span>📅 ${fullDate}</span>
+                            </div>
+                        </div>
+                        <div class="eq-meta">
+                            <div style="font-weight: 800; color: #38BDF8; font-size: 13px;">${trTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">TR</span></div>
+                            <div style="font-size: 11px; color: #FBBF24; font-weight: 700; margin-top: 2px;">${localTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">Yerel</span></div>
                         </div>
                     </div>
-                    <div class="eq-meta">
-                        <div style="font-weight: 800; color: #38BDF8; font-size: 13px;">${trTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">TR</span></div>
-                        <div style="font-size: 11px; color: #FBBF24; font-weight: 700; margin-top: 2px;">${localTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">Yerel</span></div>
+                    <!-- Tıklayınca Açılan Tam Detay Alanı -->
+                    <div class="eq-details">
+                        <div style="color: #F8FAFC; font-weight: 600; margin-bottom: 4px;">📍 Tam Konum: ${item.location}</div>
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <span>🌐 Koordinat: ${item.lat ? item.lat.toFixed(4) : '-'}, ${item.lng ? item.lng.toFixed(4) : '-'}</span>
+                            <span>⚡ Derinlik: ${item.depth} km</span>
+                            <span>🇹🇷 TR Saati: ${trTime} (${fullDate})</span>
+                            <span>🌍 Yerel Saat: ${localTime}</span>
+                        </div>
                     </div>
                 </div>`;
             }).join('');
