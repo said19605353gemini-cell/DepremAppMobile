@@ -564,15 +564,27 @@
                     const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
                     const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
 
-                    // Geçmişe dönük gün seçildiyse:
-                    // Örn 7 gün, 15 gün, 30 gün için AFAD'dan min 2.0 veya 1.8 çekerek gün gün eski kayıtların gelmesi sağlanır.
-                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
+                    // Gün aralığına göre akıllı büyüklük eşiği:
+                    let threshold = 0;
                     if (minMagnitude > 0) {
-                        url += `&minmag=${minMagnitude}`;
-                    } else if (currentDays > 1) {
-                        // 1 günden fazlaysa günde 100 küçük deprem olduğu için kotayı doldurmasın,
-                        // 17, 18, 19, 20 Kasım gibi eski günlerin de gelmesi için min 2.0 çekilir.
-                        url += `&minmag=2.0`;
+                        threshold = minMagnitude;
+                    } else if (currentDays >= 365) {
+                        threshold = 4.0; // 1 sene için büyük sarsıntılar
+                    } else if (currentDays >= 45) {
+                        threshold = 3.5; // 45 gün için
+                    } else if (currentDays >= 30) {
+                        threshold = 3.2; // 30 gün için (10, 13, 14, 15, 17 Kasım gün gün yayılır)
+                    } else if (currentDays >= 15) {
+                        threshold = 2.8; // 15 gün için
+                    } else if (currentDays >= 7) {
+                        threshold = 2.4; // 7 gün için
+                    } else if (currentDays >= 3) {
+                        threshold = 2.0; // 3 gün için
+                    }
+
+                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
+                    if (threshold > 0) {
+                        url += `&minmag=${threshold}`;
                     }
 
                     const controller = new AbortController();
