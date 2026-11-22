@@ -517,60 +517,47 @@
 
             try {
                 if (currentSource === 'afad') {
-                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?limit=100`;
-                    if (currentDays > 1) {
-                        const now = new Date();
-                        const past = new Date();
-                        past.setDate(now.getDate() - currentDays);
-                        const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
-                        const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
-                        url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=100`;
-                        const now = new Date();
-                        const past = new Date();
-                        past.setDate(now.getDate() - currentDays);
+                    const now = new Date();
+                    const past = new Date();
+                    past.setDate(now.getDate() - currentDays);
 
-                        // Türkiye saati ve UTC formatı
-                        const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
-                        const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
+                    const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
+                    const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
 
-                        // Eğer 3 günden uzun seçilmişse ve minMagnitude seçilmemişse bile önemli olanları getirmek için minmag ekle veya limit artır
-                        let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
-                        if (minMagnitude > 0) {
-                            url += `&minmag=${minMagnitude}`;
-                        } else if (currentDays >= 7) {
-                            // 7 gün ve üzerinde küçük mikro-depremler listeyi boğmasın diye min 1.5'tan çeker
-                            url += `&minmag=1.5`;
-                        }
+                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=400`;
+                    if (minMagnitude > 0) {
+                        url += `&minmag=${minMagnitude}`;
+                    } else if (currentDays >= 7) {
+                        url += `&minmag=1.5`;
+                    }
 
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 8000);
-                        const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-                        const res = await fetch(url, { signal: controller.signal });
-                        clearTimeout(timeoutId);
+                    const res = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
 
-                        const data = await res.json();
-                        rawData = (data || []).map(x => ({
-                            mag: parseFloat(x.magnitude) || 0,
-                            location: x.location || 'Konum belirtilmedi',
-                            country: x.country || 'Türkiye',
-                            province: x.province || '',
-                            district: x.district || '',
-                            depth: x.depth || '-',
-                            date: x.date ? x.date.replace('T', ' ').substring(0, 19) : '',
-                            lat: parseFloat(x.latitude),
-                            lng: parseFloat(x.longitude)
-                        }));
-                    } else {
-                        const past = new Date();
-                        past.setDate(past.getDate() - currentDays);
-                        const startTime = past.toISOString().slice(0, 10);
-                        const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=2.5&limit=100`;
-                        let minM = minMagnitude > 0 ? minMagnitude : 2.5;
-                        if (currentDays >= 30 && minMagnitude === 0) minM = 4.0; // 1 sene için büyükleri getirir
-                        const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
+                    const data = await res.json();
+                    rawData = (data || []).map(x => ({
+                        mag: parseFloat(x.magnitude) || 0,
+                        location: x.location || 'Konum belirtilmedi',
+                        country: x.country || 'Türkiye',
+                        province: x.province || '',
+                        district: x.district || '',
+                        depth: x.depth || '-',
+                        date: x.date ? x.date.replace('T', ' ').substring(0, 19) : '',
+                        lat: parseFloat(x.latitude),
+                        lng: parseFloat(x.longitude)
+                    }));
+                } else {
+                    const past = new Date();
+                    past.setDate(past.getDate() - currentDays);
+                    const startTime = past.toISOString().slice(0, 10);
+                    let minM = minMagnitude > 0 ? minMagnitude : 2.5;
+                    if (currentDays >= 30 && minMagnitude === 0) minM = 4.0;
+                    const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
 
-                        const res = await fetch(url);
+                    const res = await fetch(url);
                         const data = await res.json();
                         rawData = (data.features || []).map(f => {
                             const coords = f.geometry?.coordinates || [];
