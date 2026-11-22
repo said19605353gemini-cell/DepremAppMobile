@@ -648,12 +648,27 @@
         async function tryFallbackData() {
             const container = document.getElementById('eqContainer');
             try {
-                const res = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
+                // Seçilen gün kadar geçmişe git
+                const past = new Date();
+                past.setDate(past.getDate() - currentDays);
+                const startTime = past.toISOString().slice(0, 10);
+
+                let minM = 2.0;
+                if (currentDays >= 30) minM = 4.0;
+                else if (currentDays >= 7) minM = 2.5;
+
+                // Türkiye koordinat alanı (35-43 enlem, 25-45 boylam) veya genel
+                let url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=200`;
+                if (currentSource === 'afad') {
+                    url += `&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45`;
+                }
+
+                const res = await fetch(url);
                 const data = await res.json();
                 rawData = (data.features || []).map(f => {
                     const coords = f.geometry?.coordinates || [];
-                    const place = f.properties.place || 'Global';
-                    let country = place.includes(',') ? place.split(',').pop().trim() : 'Global';
+                    const place = f.properties.place || 'Türkiye & Çevresi';
+                    let country = place.includes(',') ? place.split(',').pop().trim() : 'Bölgesel';
                     return {
                         mag: f.properties.mag || 0,
                         location: place,
@@ -661,11 +676,28 @@
                         province: '',
                         district: '',
                         depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
-                        date: new Date(f.properties.time).toLocaleString('tr-TR'),
+                        date: f.properties.time, // Gerçek geçmiş timestamp'i
                         lat: coords.length > 1 ? coords[1] : 0,
                         lng: coords.length > 0 ? coords[0] : 0
                     };
                 });
+
+                if (rawData.length === 0) {
+                    const res2 = await fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=3.0&limit=100`);
+                    const data2 = await res2.json();
+                    rawData = (data2.features || []).map(f => ({
+                        mag: f.properties.mag || 0,
+                        location: f.properties.place || 'Global',
+                        country: (f.properties.place || '').includes(',') ? f.properties.place.split(',').pop().trim() : 'Dünya',
+                        province: '',
+                        district: '',
+                        depth: (f.geometry?.coordinates?.length > 2) ? f.geometry.coordinates[2].toFixed(1) : '-',
+                        date: f.properties.time,
+                        lat: f.geometry?.coordinates?.[1] || 0,
+                        lng: f.geometry?.coordinates?.[0] || 0
+                    }));
+                }
+
                 applyFilters();
             } catch (e) {
                 container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. Bağlantıyı kontrol ediniz.</div>`;
