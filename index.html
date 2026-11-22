@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Deprem Radar Mobil</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0B1120">
@@ -17,17 +15,29 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-
-        body {
+        html, body {
             background-color: #0B1120;
             color: #F8FAFC;
-            max-width: 650px;
-            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Responsive Container */
+        .app-shell {
+            width: 100%;
+            max-width: 600px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
+            background: #0B1120;
             padding-bottom: 75px;
+            overflow-x: hidden;
         }
 
         /* HEADER */
@@ -35,56 +45,59 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.96);
             backdrop-filter: blur(12px);
-            padding: 14px 16px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid #1E293B;
+            width: 100%;
         }
-
         .header-title {
             display: flex;
             align-items: center;
             gap: 10px;
+            min-width: 0;
         }
-
         .header-badge {
             background: #EF4444;
             color: white;
             border-radius: 8px;
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-        }
-
-        .header-text h1 {
             font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
         }
-
+        .header-text {
+            min-width: 0;
+        }
+        .header-text h1 {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .header-text p {
             font-size: 11px;
             color: #94A3B8;
+            white-space: nowrap;
         }
-
         .btn-refresh {
             background: #1E293B;
             border: 1px solid #334155;
             color: #38BDF8;
             border-radius: 8px;
-            padding: 8px 14px;
+            padding: 6px 12px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
         }
-
         .btn-refresh:active {
             transform: scale(0.96);
         }
@@ -95,27 +108,32 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             padding: 12px 16px 6px 16px;
+            width: 100%;
         }
-
         .stat-card {
             background: #1E293B;
-            border-radius: 12px;
-            padding: 10px 8px;
+            border-radius: 10px;
+            padding: 8px 6px;
             border: 1px solid #334155;
             text-align: center;
+            min-width: 0;
         }
-
         .stat-title {
-            font-size: 10px;
+            font-size: 9px;
             color: #94A3B8;
             font-weight: 600;
             text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
         .stat-val {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* FILTERS */
@@ -124,17 +142,17 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            width: 100%;
         }
-
         .search-box {
             display: flex;
             align-items: center;
             background: #1E293B;
             border: 1px solid #334155;
             border-radius: 10px;
-            padding: 9px 12px;
+            padding: 8px 12px;
+            width: 100%;
         }
-
         .search-box input {
             background: transparent;
             border: none;
@@ -145,30 +163,37 @@
             margin-left: 8px;
         }
 
-        .filter-row {
+        /* Responsive Wrappable Filter Tags (Otomatik Taşmasız Grid) */
+        .filter-group {
             display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .filter-group-title {
+            font-size: 10px;
+            color: #64748B;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-wrap {
+            display: flex;
+            flex-wrap: wrap;
             gap: 6px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding-bottom: 2px;
+            width: 100%;
         }
-
-        .filter-row::-webkit-scrollbar {
-            display: none;
-        }
-
         .pill {
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 5px 10px;
+            border-radius: 14px;
             font-size: 11px;
             font-weight: 600;
             background: #1E293B;
             color: #94A3B8;
             border: 1px solid #334155;
-            white-space: nowrap;
             cursor: pointer;
+            user-select: none;
+            transition: 0.15s ease;
         }
-
         .pill.active {
             background: #3B82F6;
             color: #FFF;
@@ -181,21 +206,23 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            width: 100%;
         }
-
         .eq-card {
             background: #1E293B;
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px 12px;
             display: flex;
             align-items: center;
             gap: 12px;
+            width: 100%;
+            min-width: 0;
         }
-
         .eq-badge {
-            min-width: 52px;
-            height: 52px;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
@@ -204,24 +231,20 @@
             color: white;
             font-weight: 800;
         }
-
         .eq-badge .mag {
-            font-size: 18px;
+            font-size: 17px;
             line-height: 1;
         }
-
         .eq-badge .type {
-            font-size: 8px;
+            font-size: 7px;
             text-transform: uppercase;
             opacity: 0.9;
-            margin-top: 3px;
+            margin-top: 2px;
         }
-
         .eq-info {
             flex: 1;
             min-width: 0;
         }
-
         .eq-location {
             font-size: 13px;
             font-weight: 600;
@@ -230,7 +253,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .eq-sub {
             display: flex;
             align-items: center;
@@ -238,22 +260,25 @@
             margin-top: 3px;
             font-size: 11px;
             color: #94A3B8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
         .eq-country-tag {
             background: #334155;
             color: #38BDF8;
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
             font-size: 10px;
             font-weight: 600;
+            flex-shrink: 0;
         }
-
         .eq-meta {
             text-align: right;
             font-size: 11px;
             color: #94A3B8;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         /* BOTTOM NAV */
@@ -263,8 +288,8 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 650px;
-            height: 60px;
+            max-width: 600px;
+            height: 56px;
             background: rgba(15, 23, 42, 0.98);
             border-top: 1px solid #1E293B;
             display: flex;
@@ -272,7 +297,6 @@
             align-items: center;
             z-index: 1000;
         }
-
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -282,127 +306,134 @@
             font-size: 11px;
             cursor: pointer;
         }
-
         .nav-item.active {
             color: #38BDF8;
         }
-
         .nav-icon {
-            font-size: 18px;
+            font-size: 17px;
         }
 
         /* MAP */
         #map-view {
             display: none;
             position: fixed;
-            top: 62px;
-            bottom: 60px;
+            top: 58px;
+            bottom: 56px;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 650px;
+            max-width: 600px;
             z-index: 500;
         }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
+        #map { width: 100%; height: 100%; }
 
         .spinner {
             text-align: center;
-            padding: 30px;
+            padding: 24px;
             color: #94A3B8;
             font-size: 13px;
         }
     </style>
 </head>
-
 <body>
 
-    <header>
-        <div class="header-title">
-            <div class="header-badge">⚡</div>
-            <div class="header-text">
-                <h1>DEPREM RADAR</h1>
-                <p id="live-indicator">● Canlı & Son 7 Gün</p>
+    <div class="app-shell">
+        <header>
+            <div class="header-title">
+                <div class="header-badge">⚡</div>
+                <div class="header-text">
+                    <h1>DEPREM RADAR</h1>
+                    <p id="live-indicator">● Canlı & Otomatik</p>
+                </div>
             </div>
+            <button class="btn-refresh" onclick="loadData()">🔄 Yenile</button>
+        </header>
+
+        <main id="list-view">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Toplam Kayıt</div>
+                    <div class="stat-val" id="stat-count" style="color: #38BDF8;">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">En Yüksek</div>
+                    <div class="stat-val" id="stat-max" style="color: #F87171;">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Hissedilen (≥3)</div>
+                    <div class="stat-val" id="stat-felt" style="color: #FBBF24;">-</div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <!-- Arama Kutusu -->
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan)..." oninput="applyFilters()">
+                </div>
+
+                <!-- Kaynak Seçimi -->
+                <div class="filter-group">
+                    <div class="filter-wrap">
+                        <div class="pill active" id="src-afad" onclick="setSource('afad', this)">🇹🇷 AFAD (Türkiye)</div>
+                        <div class="pill" id="src-usgs" onclick="setSource('usgs', this)">🌍 USGS (Dünya Geneli)</div>
+                    </div>
+                </div>
+
+                <!-- Zaman Aralığı (Otomatik Alt Satıra Geçer) -->
+                <div class="filter-group">
+                    <span class="filter-group-title">Tarih Aralığı:</span>
+                    <div class="filter-wrap" id="timeFilters">
+                        <div class="pill active" onclick="setTimeRange(7, this)">7 Gün</div>
+                        <div class="pill" onclick="setTimeRange(3, this)">3 Gün</div>
+                        <div class="pill" onclick="setTimeRange(15, this)">15 Gün</div>
+                        <div class="pill" onclick="setTimeRange(30, this)">30 Gün</div>
+                        <div class="pill" onclick="setTimeRange(45, this)">45 Gün</div>
+                        <div class="pill" onclick="setTimeRange(365, this)">1 Sene</div>
+                    </div>
+                </div>
+
+                <!-- Büyüklük Seçimi (3.0'dan 15.0'a Kadar Taşmasız) -->
+                <div class="filter-group">
+                    <span class="filter-group-title">Minimum Şiddet:</span>
+                    <div class="filter-wrap" id="magFilters">
+                        <div class="pill" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(5.0, this)">≥ 5.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(6.0, this)">≥ 6.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(7.0, this)">≥ 7.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(8.0, this)">≥ 8.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(9.0, this)">≥ 9.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(10.0, this)">≥ 10.0</div>
+                        <div class="pill" onclick="setMagnitudeFilter(15.0, this)">≥ 15.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="eq-list" id="eqContainer">
+                <div class="spinner">Veriler yükleniyor...</div>
+            </div>
+        </main>
+
+        <div id="map-view">
+            <div id="map"></div>
         </div>
-        <button class="btn-refresh" onclick="loadData()">🔄 Yenile</button>
-    </header>
 
-    <main id="list-view">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title">Toplam Kayıt</div>
-                <div class="stat-val" id="stat-count" style="color: #38BDF8;">-</div>
+        <nav class="bottom-nav">
+            <div class="nav-item active" id="tab-list" onclick="switchTab('list')">
+                <span class="nav-icon">📋</span>
+                <span>Liste</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-title">En Yüksek</div>
-                <div class="stat-val" id="stat-max" style="color: #F87171;">-</div>
+            <div class="nav-item" id="tab-map" onclick="switchTab('map')">
+                <span class="nav-icon">🗺️</span>
+                <span>Harita</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-title">Hissedilen (≥3)</div>
-                <div class="stat-val" id="stat-felt" style="color: #FBBF24;">-</div>
+            <div class="nav-item" onclick="loadData()">
+                <span class="nav-icon">⚡</span>
+                <span>Canlı Takip</span>
             </div>
-        </div>
-
-        <div class="filter-section">
-            <div class="search-box">
-                <span>🔍</span>
-                <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan, Greece)..."
-                    oninput="applyFilters()">
-            </div>
-
-            <!-- Genişletilmiş Zaman Aralığı -->
-            <div class="filter-row">
-                <div class="pill active" onclick="setTimeRange(7, this)">7 Gün</div>
-                <div class="pill" onclick="setTimeRange(3, this)">3 Gün</div>
-                <div class="pill" onclick="setTimeRange(15, this)">15 Gün</div>
-                <div class="pill" onclick="setTimeRange(30, this)">30 Gün</div>
-                <div class="pill" onclick="setTimeRange(45, this)">45 Gün</div>
-                <div class="pill" onclick="setTimeRange(365, this)">1 Sene</div>
-            </div>
-
-            <!-- Kaynak & Büyüklük Seçici (3.0'dan 15.0'a kadar) -->
-            <div class="filter-row">
-                <div class="pill active" id="src-afad" onclick="setSource('afad', this)">AFAD (Türkiye)</div>
-                <div class="pill" id="src-usgs" onclick="setSource('usgs', this)">USGS (Dünya)</div>
-                <div class="pill" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(5.0, this)">≥ 5.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(6.0, this)">≥ 6.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(7.0, this)">≥ 7.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(8.0, this)">≥ 8.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(9.0, this)">≥ 9.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(10.0, this)">≥ 10.0</div>
-                <div class="pill" onclick="setMagnitudeFilter(15.0, this)">≥ 15.0</div>
-            </div>
-        </div>
-
-        <div class="eq-list" id="eqContainer">
-            <div class="spinner">Veriler yükleniyor...</div>
-        </div>
-    </main>
-
-    <div id="map-view">
-        <div id="map"></div>
+        </nav>
     </div>
-
-    <nav class="bottom-nav">
-        <div class="nav-item active" id="tab-list" onclick="switchTab('list')">
-            <span class="nav-icon">📋</span>
-            <span>Liste</span>
-        </div>
-        <div class="nav-item" id="tab-map" onclick="switchTab('map')">
-            <span class="nav-icon">🗺️</span>
-            <span>Harita</span>
-        </div>
-        <div class="nav-item" onclick="loadData()">
-            <span class="nav-icon">⚡</span>
-            <span>Canlı Takip</span>
-        </div>
-    </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -415,7 +446,7 @@
 
         function setTimeRange(days, el) {
             currentDays = days;
-            el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('#timeFilters .pill').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             loadData();
         }
@@ -434,6 +465,7 @@
                 el.classList.remove('active');
             } else {
                 minMagnitude = mag;
+                document.querySelectorAll('#magFilters .pill').forEach(p => p.classList.remove('active'));
                 el.classList.add('active');
             }
             applyFilters();
@@ -445,7 +477,6 @@
 
             try {
                 if (currentSource === 'afad') {
-                    // AFAD son depremler veya tarih filtresi
                     let url = `https://deprem.afad.gov.tr/apiv2/event/filter?limit=100`;
                     if (currentDays > 1) {
                         const now = new Date();
@@ -456,7 +487,6 @@
                         url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=100`;
                     }
 
-                    // CORS ve timeout korumalı fetch
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
@@ -508,8 +538,7 @@
 
                 applyFilters();
             } catch (err) {
-                // Eğer doğrudan AFAD CORS engeline takılırsa açık API proxy alternatifi
-                console.warn("Ana API baglanti hatasi, yedek baglanti deneniyor:", err);
+                console.warn("Ana API baglanti hatasi, yedek deneniyor:", err);
                 tryFallbackData();
             }
         }
@@ -517,7 +546,6 @@
         async function tryFallbackData() {
             const container = document.getElementById('eqContainer');
             try {
-                // USGS anlık global + Türkiye verisi yedeği
                 const res = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
                 const data = await res.json();
                 rawData = (data.features || []).map(f => {
@@ -538,11 +566,12 @@
                 });
                 applyFilters();
             } catch (e) {
-                container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. İnternet bağlantınızı kontrol ediniz.</div>`;
+                container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. Bağlantıyı kontrol ediniz.</div>`;
             }
         }
 
         function getMagnitudeColor(mag) {
+            if (mag >= 7.0) return { bg: '#b91c1c', label: 'Yıkıcı' };
             if (mag >= 5.0) return { bg: '#ef4444', label: 'Şiddetli' };
             if (mag >= 4.0) return { bg: '#f97316', label: 'Orta+' };
             if (mag >= 3.0) return { bg: '#eab308', label: 'Hafif+' };
@@ -575,7 +604,6 @@
                 return;
             }
 
-            // Performans için max 50 kart render edilir (donmayı önler)
             const displayList = list.slice(0, 50);
 
             container.innerHTML = displayList.map(item => {
@@ -650,7 +678,7 @@
             mapMarkers.forEach(m => leafletMap.removeLayer(m));
             mapMarkers = [];
 
-            list.slice(0, 100).forEach(item => {
+            list.slice(0, 80).forEach(item => {
                 if (!isNaN(item.lat) && !isNaN(item.lng) && item.lat !== 0) {
                     const { bg } = getMagnitudeColor(item.mag);
                     const marker = L.circleMarker([item.lat, item.lng], {
@@ -670,5 +698,4 @@
         loadData();
     </script>
 </body>
-
 </html>
