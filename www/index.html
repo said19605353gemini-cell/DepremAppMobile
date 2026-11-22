@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 
 <head>
@@ -1031,11 +1031,11 @@
                         const coords = f.geometry?.coordinates || [];
                         const place = f.properties.place || 'Global';
                         let country = 'Dünya';
-                        if (place.includes(',')) {
+                        if (place.includes('Turkey') || place.includes('Türkiye') || place.includes('Kahramanmaras') || place.includes('Düzce') || place.includes('Izmir') || place.includes('Malatya')) {
+                            country = 'Türkiye';
+                        } else if (place.includes(',')) {
                             const parts = place.split(',');
                             country = parts[parts.length - 1].trim();
-                        } else if (place.includes('Turkey') || place.includes('Kahramanmaras')) {
-                            country = 'Türkiye';
                         }
 
                         return {
@@ -1131,6 +1131,12 @@
             const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
             let filtered = rawData.filter(item => {
                 if (item.mag < minMagnitude) return false;
+                if (currentSource === 'afad') {
+                    const c = (item.country || '').toLowerCase();
+                    const loc = (item.location || '').toLowerCase();
+                    const isTr = c.includes('türkiye') || c.includes('turkey') || loc.includes('türkiye') || loc.includes('turkey') || (item.province && item.province.trim().length > 0);
+                    if (!isTr) return false;
+                }
                 if (query) {
                     const loc = (item.location || '').toLowerCase();
                     const country = (item.country || '').toLowerCase();
