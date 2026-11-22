@@ -410,6 +410,51 @@
             color: #94A3B8;
             font-size: 13px;
         }
+
+        /* PAGINATION (Sayfalama Butonları) */
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 16px 14px 20px 14px;
+            width: 100%;
+        }
+
+        .page-btn {
+            min-width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: #1E293B;
+            color: #94A3B8;
+            border: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .page-btn:active {
+            transform: scale(0.92);
+        }
+
+        .page-btn.active {
+            background: #3B82F6;
+            color: #FFF;
+            border-color: #3B82F6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .page-btn.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -460,6 +505,7 @@
                     </div>
                 </div>
 
+                <!-- Zaman Aralığı (Otomatik Alt Satıra Geçer) -->
                 <!-- Zaman Aralığı (Genişletilmiş Tarih Seçenekleri) -->
                 <div class="filter-group">
                     <span class="filter-group-title">Tarih Aralığı:</span>
@@ -507,6 +553,9 @@
             <div class="eq-list" id="eqContainer">
                 <div class="spinner">Veriler yükleniyor...</div>
             </div>
+
+            <!-- Sayfalama (Pagination Sekmeleri) -->
+            <div class="pagination-container" id="paginationContainer" style="display: none;"></div>
         </main>
 
         <div id="map-view">
@@ -536,11 +585,15 @@
         let currentDays = 7;
         let minMagnitude = 0;
         let currentSort = 'newest';
+        let currentPage = 1;
+        const pageSize = 50; // Her sayfada tam 50 deprem
+        let currentFilteredList = [];
         let leafletMap = null;
         let mapMarkers = [];
 
         function setSortMode(mode, el) {
             currentSort = mode;
+            currentPage = 1;
             document.querySelectorAll('#sortFilters .pill').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             applyFilters();
@@ -548,6 +601,7 @@
 
         function setTimeRange(days, el) {
             currentDays = days;
+            currentPage = 1;
             document.querySelectorAll('#timeFilters .pill').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             loadData();
@@ -555,6 +609,7 @@
 
         function setSource(src, el) {
             currentSource = src;
+            currentPage = 1;
             document.getElementById('src-afad').classList.remove('active');
             document.getElementById('src-usgs').classList.remove('active');
             el.classList.add('active');
@@ -562,6 +617,7 @@
         }
 
         function setMagnitudeFilter(mag, el) {
+            currentPage = 1;
             if (minMagnitude === mag) {
                 minMagnitude = 0;
                 el.classList.remove('active');
@@ -597,10 +653,12 @@
                     } else if (currentDays >= 1095) {
                         threshold = 4.5; // 3 sene için
                     } else if (currentDays >= 365) {
+                        threshold = 4.0; // 1 sene için büyük sarsıntılar
                         threshold = 4.0; // 1 sene için
                     } else if (currentDays >= 45) {
                         threshold = 3.5; // 45 gün için
                     } else if (currentDays >= 30) {
+                        threshold = 3.2; // 30 gün için (10, 13, 14, 15, 17 Kasım gün gün yayılır)
                         threshold = 3.2; // 30 gün için
                     } else if (currentDays >= 15) {
                         threshold = 2.8; // 15 gün için
