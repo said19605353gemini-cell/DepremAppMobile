@@ -316,20 +316,23 @@
                 <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan, Greece)..." oninput="applyFilters()">
             </div>
 
-            <!-- Zaman Aralığı -->
+            <!-- Zaman Aralığı (3 günden 15 güne kadar) -->
             <div class="filter-row">
-                <div class="pill active" onclick="setTimeRange(7, this)">Son 7 Gün</div>
-                <div class="pill" onclick="setTimeRange(1, this)">Son 24 Saat</div>
-                <div class="pill" onclick="setTimeRange(14, this)">Son 14 Gün</div>
-                <div class="pill" onclick="setTimeRange(30, this)">Son 30 Gün</div>
+                <div class="pill active" onclick="setTimeRange(7, this)">7 Gün</div>
+                <div class="pill" onclick="setTimeRange(3, this)">3 Gün</div>
+                <div class="pill" onclick="setTimeRange(5, this)">5 Gün</div>
+                <div class="pill" onclick="setTimeRange(10, this)">10 Gün</div>
+                <div class="pill" onclick="setTimeRange(15, this)">15 Gün</div>
             </div>
 
-            <!-- Kaynak & Büyüklük -->
+            <!-- Kaynak & Büyüklük Seçici (3.0'dan başlayarak) -->
             <div class="filter-row">
                 <div class="pill active" id="src-afad" onclick="setSource('afad', this)">AFAD (Türkiye)</div>
                 <div class="pill" id="src-usgs" onclick="setSource('usgs', this)">USGS (Dünya)</div>
                 <div class="pill" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
                 <div class="pill" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
+                <div class="pill" onclick="setMagnitudeFilter(5.0, this)">≥ 5.0</div>
+                <div class="pill" onclick="setMagnitudeFilter(6.0, this)">≥ 6.0</div>
             </div>
         </div>
 
@@ -398,6 +401,7 @@
 
             try {
                 if (currentSource === 'afad') {
+                    // AFAD son depremler veya tarih filtresi
                     let url = `https://deprem.afad.gov.tr/apiv2/event/filter?limit=100`;
                     if (currentDays > 1) {
                         const now = new Date();
@@ -408,6 +412,7 @@
                         url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=100`;
                     }
 
+                    // CORS ve timeout korumalı fetch
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
@@ -459,6 +464,7 @@
 
                 applyFilters();
             } catch (err) {
+                // Eğer doğrudan AFAD CORS engeline takılırsa açık API proxy alternatifi
                 console.warn("Ana API baglanti hatasi, yedek baglanti deneniyor:", err);
                 tryFallbackData();
             }
@@ -467,6 +473,7 @@
         async function tryFallbackData() {
             const container = document.getElementById('eqContainer');
             try {
+                // USGS anlık global + Türkiye verisi yedeği
                 const res = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
                 const data = await res.json();
                 rawData = (data.features || []).map(f => {
@@ -524,6 +531,7 @@
                 return;
             }
 
+            // Performans için max 50 kart render edilir (donmayı önler)
             const displayList = list.slice(0, 50);
 
             container.innerHTML = displayList.map(item => {
