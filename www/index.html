@@ -98,13 +98,31 @@
             white-space: nowrap;
         }
 
+        .lang-select {
+            background: #1E293B;
+            border: 1px solid #334155;
+            color: #38BDF8;
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .btn-refresh {
             background: #1E293B;
             border: 1px solid #334155;
             color: #38BDF8;
             border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 12px;
+            padding: 6px 10px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
@@ -465,25 +483,37 @@
             <div class="header-title">
                 <div class="header-badge">⚡</div>
                 <div class="header-text">
-                    <h1>DEPREM RADAR</h1>
+                    <h1 id="txt-app-title">DEPREM RADAR</h1>
                     <p id="live-indicator">● Canlı & Otomatik</p>
                 </div>
             </div>
-            <button class="btn-refresh" onclick="loadData()">🔄 Yenile</button>
+            <div class="header-actions">
+                <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+                    <option value="tr" selected>🇹🇷 TR</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="ar">🇸🇦 AR</option>
+                    <option value="ru">🇷🇺 RU</option>
+                    <option value="ja">🇯🇵 JA</option>
+                </select>
+                <button class="btn-refresh" id="btn-refresh" onclick="loadData()">🔄 Yenile</button>
+            </div>
         </header>
 
         <main id="list-view">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-title">Toplam Kayıt</div>
+                    <div class="stat-title" id="txt-stat-total">Toplam Kayıt</div>
                     <div class="stat-val" id="stat-count" style="color: #38BDF8;">-</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-title">En Yüksek</div>
+                    <div class="stat-title" id="txt-stat-max">En Yüksek</div>
                     <div class="stat-val" id="stat-max" style="color: #F87171;">-</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-title">Hissedilen (≥3)</div>
+                    <div class="stat-title" id="txt-stat-felt">Hissedilen (≥3)</div>
                     <div class="stat-val" id="stat-felt" style="color: #FBBF24;">-</div>
                 </div>
             </div>
@@ -505,26 +535,25 @@
                     </div>
                 </div>
 
-                <!-- Zaman Aralığı (Otomatik Alt Satıra Geçer) -->
                 <!-- Zaman Aralığı (Genişletilmiş Tarih Seçenekleri) -->
                 <div class="filter-group">
-                    <span class="filter-group-title">Tarih Aralığı:</span>
+                    <span class="filter-group-title" id="txt-lbl-timerange">Tarih Aralığı:</span>
                     <div class="filter-wrap" id="timeFilters">
-                        <div class="pill active" onclick="setTimeRange(7, this)">7 Gün</div>
-                        <div class="pill" onclick="setTimeRange(3, this)">3 Gün</div>
-                        <div class="pill" onclick="setTimeRange(15, this)">15 Gün</div>
-                        <div class="pill" onclick="setTimeRange(30, this)">30 Gün</div>
-                        <div class="pill" onclick="setTimeRange(45, this)">45 Gün</div>
-                        <div class="pill" onclick="setTimeRange(365, this)">1 Sene</div>
-                        <div class="pill" onclick="setTimeRange(1095, this)">3 Sene</div>
-                        <div class="pill" onclick="setTimeRange(1825, this)">5 Sene</div>
-                        <div class="pill" onclick="setTimeRange(3650, this)">10 Sene</div>
+                        <div class="pill active" data-days="7" onclick="setTimeRange(7, this)">7 Gün</div>
+                        <div class="pill" data-days="3" onclick="setTimeRange(3, this)">3 Gün</div>
+                        <div class="pill" data-days="15" onclick="setTimeRange(15, this)">15 Gün</div>
+                        <div class="pill" data-days="30" onclick="setTimeRange(30, this)">30 Gün</div>
+                        <div class="pill" data-days="45" onclick="setTimeRange(45, this)">45 Gün</div>
+                        <div class="pill" data-days="365" onclick="setTimeRange(365, this)">1 Sene</div>
+                        <div class="pill" data-days="1095" onclick="setTimeRange(1095, this)">3 Sene</div>
+                        <div class="pill" data-days="1825" onclick="setTimeRange(1825, this)">5 Sene</div>
+                        <div class="pill" data-days="3650" onclick="setTimeRange(3650, this)">10 Sene</div>
                     </div>
                 </div>
 
                 <!-- Büyüklük Seçimi (3.0'dan 15.0'a Kadar Taşmasız) -->
                 <div class="filter-group">
-                    <span class="filter-group-title">Minimum Şiddet:</span>
+                    <span class="filter-group-title" id="txt-lbl-magnitude">Minimum Şiddet:</span>
                     <div class="filter-wrap" id="magFilters">
                         <div class="pill" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
                         <div class="pill" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
@@ -540,12 +569,12 @@
 
                 <!-- Sıralama Seçenekleri (En yüksek puan, En yeni, En eski) -->
                 <div class="filter-group">
-                    <span class="filter-group-title">Sıralama Ölçütü:</span>
+                    <span class="filter-group-title" id="txt-lbl-sorting">Sıralama Ölçütü:</span>
                     <div class="filter-wrap" id="sortFilters">
-                        <div class="pill active" onclick="setSortMode('newest', this)">🕒 En Yeni ➔ Eski</div>
-                        <div class="pill" onclick="setSortMode('oldest', this)">⏳ Eskiden ➔ Yeniye</div>
-                        <div class="pill" onclick="setSortMode('magDesc', this)">🔥 En Yüksek Şiddet</div>
-                        <div class="pill" onclick="setSortMode('magAsc', this)">🌱 En Düşük Şiddet</div>
+                        <div class="pill active" id="sort-newest" onclick="setSortMode('newest', this)">🕒 En Yeni ➔ Eski</div>
+                        <div class="pill" id="sort-oldest" onclick="setSortMode('oldest', this)">⏳ Eskiden ➔ Yeniye</div>
+                        <div class="pill" id="sort-magdesc" onclick="setSortMode('magDesc', this)">🔥 En Yüksek Şiddet</div>
+                        <div class="pill" id="sort-magasc" onclick="setSortMode('magAsc', this)">🌱 En Düşük Şiddet</div>
                     </div>
                 </div>
             </div>
@@ -565,21 +594,311 @@
         <nav class="bottom-nav">
             <div class="nav-item active" id="tab-list" onclick="switchTab('list')">
                 <span class="nav-icon">📋</span>
-                <span>Liste</span>
+                <span id="nav-lbl-list">Liste</span>
             </div>
             <div class="nav-item" id="tab-map" onclick="switchTab('map')">
                 <span class="nav-icon">🗺️</span>
-                <span>Harita</span>
+                <span id="nav-lbl-map">Harita</span>
             </div>
             <div class="nav-item" onclick="loadData()">
                 <span class="nav-icon">⚡</span>
-                <span>Canlı Takip</span>
+                <span id="nav-lbl-live">Canlı Takip</span>
             </div>
         </nav>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // ULUSLARARASI ÇOKLU DİL SÖZLÜĞÜ (i18n)
+        const i18n = {
+            tr: {
+                appTitle: "DEPREM RADAR",
+                liveStatus: "● Canlı & Otomatik",
+                btnRefresh: "🔄 Yenile",
+                statTotal: "Toplam Kayıt",
+                statMax: "En Yüksek",
+                statFelt: "Hissedilen (≥3)",
+                searchPlaceholder: "Şehir veya ülke ara (Örn: İzmir, Japan)...",
+                lblTimeRange: "Tarih Aralığı:",
+                lblMagnitude: "Minimum Şiddet:",
+                lblSorting: "Sıralama Ölçütü:",
+                sortNewest: "🕒 En Yeni ➔ Eski",
+                sortOldest: "⏳ Eskiden ➔ Yeniye",
+                sortMagDesc: "🔥 En Yüksek Şiddet",
+                sortMagAsc: "🌱 En Düşük Şiddet",
+                navTabList: "Liste",
+                navTabMap: "Harita",
+                navTabLive: "Canlı Takip",
+                depthUnit: "Derinlik",
+                clickForDetails: "Detay için tıkla ▾",
+                fullLocation: "Tam Konum",
+                coordinates: "Koordinat",
+                originDate: "Oluş Tarihi",
+                trTimeLabel: "TR",
+                localTimeLabel: "Yerel",
+                loading: "Sismik veriler alınıyor, lütfen bekleyin...",
+                noData: "Arama kriterlerine uygun deprem bulunamadı.",
+                daySuffix: "Gün",
+                yearSuffix: "Sene",
+                magLabels: { heavy: "Yıkıcı", strong: "Şiddetli", moderate: "Orta+", light: "Hafif+", minor: "Küçük" }
+            },
+            en: {
+                appTitle: "EARTHQUAKE RADAR",
+                liveStatus: "● Live & Automatic",
+                btnRefresh: "🔄 Refresh",
+                statTotal: "Total Events",
+                statMax: "Highest Mag",
+                statFelt: "Felt (≥3)",
+                searchPlaceholder: "Search city or country (e.g. California, Japan)...",
+                lblTimeRange: "Time Range:",
+                lblMagnitude: "Min Magnitude:",
+                lblSorting: "Sort By:",
+                sortNewest: "🕒 Newest First",
+                sortOldest: "⏳ Oldest First",
+                sortMagDesc: "🔥 Highest Magnitude",
+                sortMagAsc: "🌱 Lowest Magnitude",
+                navTabList: "List",
+                navTabMap: "Map",
+                navTabLive: "Live Feed",
+                depthUnit: "Depth",
+                clickForDetails: "Tap for details ▾",
+                fullLocation: "Full Location",
+                coordinates: "Coordinates",
+                originDate: "Event Date",
+                trTimeLabel: "TR",
+                localTimeLabel: "Local",
+                loading: "Loading seismic data, please wait...",
+                noData: "No earthquakes matching your criteria.",
+                daySuffix: "Days",
+                yearSuffix: "Years",
+                magLabels: { heavy: "Destructive", strong: "Strong", moderate: "Moderate", light: "Light", minor: "Minor" }
+            },
+            es: {
+                appTitle: "RADAR TERREMOTOS",
+                liveStatus: "● En vivo & Auto",
+                btnRefresh: "🔄 Actualizar",
+                statTotal: "Total Sismos",
+                statMax: "Mayor Magnitud",
+                statFelt: "Sentidos (≥3)",
+                searchPlaceholder: "Buscar ciudad o país (ej. México, Chile)...",
+                lblTimeRange: "Rango de Tiempo:",
+                lblMagnitude: "Magnitud Mínima:",
+                lblSorting: "Ordenar Por:",
+                sortNewest: "🕒 Más recientes",
+                sortOldest: "⏳ Más antiguos",
+                sortMagDesc: "🔥 Mayor Magnitud",
+                sortMagAsc: "🌱 Menor Magnitud",
+                navTabList: "Lista",
+                navTabMap: "Mapa",
+                navTabLive: "En Vivo",
+                depthUnit: "Prof.",
+                clickForDetails: "Tocar para detalles ▾",
+                fullLocation: "Ubicación Completa",
+                coordinates: "Coordenadas",
+                originDate: "Fecha",
+                trTimeLabel: "TR",
+                localTimeLabel: "Local",
+                loading: "Obteniendo datos sísmicos...",
+                noData: "No se encontraron terremotos.",
+                daySuffix: "Días",
+                yearSuffix: "Años",
+                magLabels: { heavy: "Destructivo", strong: "Fuerte", moderate: "Moderado", light: "Leve", minor: "Menor" }
+            },
+            de: {
+                appTitle: "ERDBEBEN RADAR",
+                liveStatus: "● Live & Automatisch",
+                btnRefresh: "🔄 Aktualisieren",
+                statTotal: "Gesamt",
+                statMax: "Höchste Stärke",
+                statFelt: "Spürbar (≥3)",
+                searchPlaceholder: "Stadt oder Land suchen...",
+                lblTimeRange: "Zeitraum:",
+                lblMagnitude: "Min. Stärke:",
+                lblSorting: "Sortieren nach:",
+                sortNewest: "🕒 Neueste zuerst",
+                sortOldest: "⏳ Älteste zuerst",
+                sortMagDesc: "🔥 Höchste Stärke",
+                sortMagAsc: "🌱 Geringste Stärke",
+                navTabList: "Liste",
+                navTabMap: "Karte",
+                navTabLive: "Live",
+                depthUnit: "Tiefe",
+                clickForDetails: "Tippen für Details ▾",
+                fullLocation: "Genauer Ort",
+                coordinates: "Koordinaten",
+                originDate: "Datum",
+                trTimeLabel: "TR",
+                localTimeLabel: "Lokal",
+                loading: "Erdbebendaten werden geladen...",
+                noData: "Keine Erdbeben gefunden.",
+                daySuffix: "Tage",
+                yearSuffix: "Jahre",
+                magLabels: { heavy: "Zerstörerisch", strong: "Stark", moderate: "Mäßig", light: "Leicht", minor: "Gering" }
+            },
+            fr: {
+                appTitle: "RADAR SÉISMES",
+                liveStatus: "● En direct & Auto",
+                btnRefresh: "🔄 Actualiser",
+                statTotal: "Total Séismes",
+                statMax: "Mag. Max",
+                statFelt: "Ressentis (≥3)",
+                searchPlaceholder: "Rechercher une ville ou un pays...",
+                lblTimeRange: "Période:",
+                lblMagnitude: "Magnitude Min.:",
+                lblSorting: "Trier Par:",
+                sortNewest: "🕒 Plus Récents",
+                sortOldest: "⏳ Plus Anciens",
+                sortMagDesc: "🔥 Plus Forte Mag.",
+                sortMagAsc: "🌱 Plus Faible Mag.",
+                navTabList: "Liste",
+                navTabMap: "Carte",
+                navTabLive: "En Direct",
+                depthUnit: "Prof.",
+                clickForDetails: "Toucher pour détails ▾",
+                fullLocation: "Localisation",
+                coordinates: "Coordonnées",
+                originDate: "Date",
+                trTimeLabel: "TR",
+                localTimeLabel: "Locale",
+                loading: "Chargement des données sismiques...",
+                noData: "Aucun séisme trouvé.",
+                daySuffix: "Jours",
+                yearSuffix: "Ans",
+                magLabels: { heavy: "Destructeur", strong: "Fort", moderate: "Modéré", light: "Léger", minor: "Mineur" }
+            },
+            ar: {
+                appTitle: "رادار الزلازل",
+                liveStatus: "● مباشر وتلقائي",
+                btnRefresh: "🔄 تحديث",
+                statTotal: "إجمالي الزلازل",
+                statMax: "أعلى قوة",
+                statFelt: "المحسوسة (≥3)",
+                searchPlaceholder: "ابحث عن مدينة أو دولة...",
+                lblTimeRange: "الفترة الزمنية:",
+                lblMagnitude: "أدنى قوة:",
+                lblSorting: "ترتيب حسب:",
+                sortNewest: "🕒 الأحدث أولاً",
+                sortOldest: "⏳ الأقدم أولاً",
+                sortMagDesc: "🔥 الأقوى شدة",
+                sortMagAsc: "🌱 الأقل شدة",
+                navTabList: "القائمة",
+                navTabMap: "الخريطة",
+                navTabLive: "مباشر",
+                depthUnit: "عمق",
+                clickForDetails: "اضغط للتفاصيل ▾",
+                fullLocation: "الموقع الكامل",
+                coordinates: "الإحداثيات",
+                originDate: "تاريخ الحدث",
+                trTimeLabel: "تركيا",
+                localTimeLabel: "محلي",
+                loading: "جاري تحميل البيانات الزلزالية...",
+                noData: "لم يتم العثور على زلازل مطابقة.",
+                daySuffix: "أيام",
+                yearSuffix: "سنوات",
+                magLabels: { heavy: "مدمر", strong: "قوي", moderate: "متوسط", light: "خفيف", minor: "بسيط" }
+            },
+            ru: {
+                appTitle: "РАДАР ЗЕМЛЕТРЯСЕНИЙ",
+                liveStatus: "● В реальном времени",
+                btnRefresh: "🔄 Обновить",
+                statTotal: "Всего событий",
+                statMax: "Макс. сила",
+                statFelt: "Ощутимые (≥3)",
+                searchPlaceholder: "Поиск города или страны...",
+                lblTimeRange: "Период:",
+                lblMagnitude: "Мин. магнитуда:",
+                lblSorting: "Сортировка:",
+                sortNewest: "🕒 Сначала новые",
+                sortOldest: "⏳ Сначала старые",
+                sortMagDesc: "🔥 Самые сильные",
+                sortMagAsc: "🌱 Самые слабые",
+                navTabList: "Список",
+                navTabMap: "Карта",
+                navTabLive: "Прямой эфир",
+                depthUnit: "Глубина",
+                clickForDetails: "Нажмите для деталей ▾",
+                fullLocation: "Локация",
+                coordinates: "Координаты",
+                originDate: "Дата события",
+                trTimeLabel: "ТР",
+                localTimeLabel: "Местное",
+                loading: "Загрузка сейсмических данных...",
+                noData: "Землетрясений не найдено.",
+                daySuffix: "дней",
+                yearSuffix: "лет",
+                magLabels: { heavy: "Разрушительное", strong: "Сильное", moderate: "Умеренное", light: "Слабое", minor: "Незначительное" }
+            },
+            ja: {
+                appTitle: "地震レーダー",
+                liveStatus: "● リアルタイム自動更新",
+                btnRefresh: "🔄 更新",
+                statTotal: "総地震数",
+                statMax: "最大規模",
+                statFelt: "有感 (≥3)",
+                searchPlaceholder: "都市または国を検索...",
+                lblTimeRange: "期間:",
+                lblMagnitude: "最小マグニチュード:",
+                lblSorting: "並び替え:",
+                sortNewest: "🕒 新しい順",
+                sortOldest: "⏳ 古い順",
+                sortMagDesc: "🔥 規模の大きい順",
+                sortMagAsc: "🌱 規模の小さい順",
+                navTabList: "リスト",
+                navTabMap: "地図",
+                navTabLive: "ライブ監視",
+                depthUnit: "深さ",
+                clickForDetails: "詳細を表示 ▾",
+                fullLocation: "震央地名",
+                coordinates: "座標",
+                originDate: "発生日時",
+                trTimeLabel: "トルコ",
+                localTimeLabel: "現地",
+                loading: "地震データを取得中...",
+                noData: "該当する地震はありません。",
+                daySuffix: "日",
+                yearSuffix: "年",
+                magLabels: { heavy: "壊滅的", strong: "強い", moderate: "中程度", light: "軽微", minor: "微小" }
+            }
+        };
+
+        let currentLang = 'tr';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = i18n[lang] || i18n.tr;
+
+            document.getElementById('txt-app-title').innerText = t.appTitle;
+            document.getElementById('live-indicator').innerText = t.liveStatus;
+            document.getElementById('btn-refresh').innerText = t.btnRefresh;
+            document.getElementById('txt-stat-total').innerText = t.statTotal;
+            document.getElementById('txt-stat-max').innerText = t.statMax;
+            document.getElementById('txt-stat-felt').innerText = t.statFelt;
+            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+            document.getElementById('txt-lbl-timerange').innerText = t.lblTimeRange;
+            document.getElementById('txt-lbl-magnitude').innerText = t.lblMagnitude;
+            document.getElementById('txt-lbl-sorting').innerText = t.lblSorting;
+            document.getElementById('sort-newest').innerText = t.sortNewest;
+            document.getElementById('sort-oldest').innerText = t.sortOldest;
+            document.getElementById('sort-magdesc').innerText = t.sortMagDesc;
+            document.getElementById('sort-magasc').innerText = t.sortMagAsc;
+            document.getElementById('nav-lbl-list').innerText = t.navTabList;
+            document.getElementById('nav-lbl-map').innerText = t.navTabMap;
+            document.getElementById('nav-lbl-live').innerText = t.navTabLive;
+
+            // Zaman butonlarının eklerini güncelle
+            document.querySelectorAll('#timeFilters .pill').forEach(pill => {
+                const days = parseInt(pill.getAttribute('data-days'));
+                if (days >= 365) {
+                    const y = Math.round(days / 365);
+                    pill.innerText = `${y} ${t.yearSuffix}`;
+                } else {
+                    pill.innerText = `${days} ${t.daySuffix}`;
+                }
+            });
+
+            applyFilters();
+        }
+
         let rawData = [];
         let currentSource = 'afad';
         let currentDays = 7;
@@ -791,11 +1110,12 @@
         }
 
         function getMagnitudeColor(mag) {
-            if (mag >= 7.0) return { bg: '#b91c1c', label: 'Yıkıcı' };
-            if (mag >= 5.0) return { bg: '#ef4444', label: 'Şiddetli' };
-            if (mag >= 4.0) return { bg: '#f97316', label: 'Orta+' };
-            if (mag >= 3.0) return { bg: '#eab308', label: 'Hafif+' };
-            return { bg: '#10b981', label: 'Küçük' };
+            const t = i18n[currentLang]?.magLabels || i18n.tr.magLabels;
+            if (mag >= 7.0) return { bg: '#b91c1c', label: t.heavy };
+            if (mag >= 5.0) return { bg: '#ef4444', label: t.strong };
+            if (mag >= 4.0) return { bg: '#f97316', label: t.moderate };
+            if (mag >= 3.0) return { bg: '#eab308', label: t.light };
+            return { bg: '#10b981', label: t.minor };
         }
 
         function applyFilters() {
@@ -850,8 +1170,9 @@
 
         function renderCurrentPage() {
             const container = document.getElementById('eqContainer');
+            const t = i18n[currentLang] || i18n.tr;
             if (!currentFilteredList.length) {
-                container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem bulunamadı.</div>`;
+                container.innerHTML = `<div class="spinner">${t.noData}</div>`;
                 return;
             }
 
@@ -874,29 +1195,29 @@
                             <div class="eq-location">${item.location}</div>
                             <div class="eq-sub">
                                 <span class="eq-country-tag">${item.country}</span>
-                                <span>📍 ${item.depth} km Derinlik</span>
+                                <span>📍 ${item.depth} km ${t.depthUnit}</span>
                             </div>
                         </div>
                         <div class="eq-meta">
-                            <div style="font-weight: 800; color: #38BDF8; font-size: 13px;">${trTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">TR</span></div>
-                            <div style="font-size: 11px; color: #FBBF24; font-weight: 700; margin-top: 2px;">${localTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">Yerel</span></div>
+                            <div style="font-weight: 800; color: #38BDF8; font-size: 13px;">${trTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">${t.trTimeLabel}</span></div>
+                            <div style="font-size: 11px; color: #FBBF24; font-weight: 700; margin-top: 2px;">${localTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">${t.localTimeLabel}</span></div>
                         </div>
                     </div>
                     <!-- Her telefonda net gözüken tam tarih şeridi -->
                     <div class="eq-date-row">
                         <span>📅 <b>${fullDate}</b></span>
                         <span style="color: #475569;">•</span>
-                        <span style="color: #64748B; font-size: 10px;">Detay için tıkla ▾</span>
+                        <span style="color: #64748B; font-size: 10px;">${t.clickForDetails}</span>
                     </div>
                     <!-- Tıklayınca Açılan Tam Detay Alanı -->
                     <div class="eq-details">
-                        <div style="color: #F8FAFC; font-weight: 700; margin-bottom: 6px;">📍 Tam Konum: ${item.location}</div>
+                        <div style="color: #F8FAFC; font-weight: 700; margin-bottom: 6px;">📍 ${t.fullLocation}: ${item.location}</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
-                            <div>🌐 <b>Koordinat:</b> ${item.lat ? item.lat.toFixed(4) : '-'}, ${item.lng ? item.lng.toFixed(4) : '-'}</div>
-                            <div>⚡ <b>Derinlik:</b> ${item.depth} km</div>
-                            <div>🇹🇷 <b>TR Saati:</b> ${trTime}</div>
-                            <div>🌍 <b>Yerel Saat:</b> ${localTime}</div>
-                            <div style="grid-column: span 2;">📅 <b>Oluş Tarihi:</b> ${fullDate}</div>
+                            <div>🌐 <b>${t.coordinates}:</b> ${item.lat ? item.lat.toFixed(4) : '-'}, ${item.lng ? item.lng.toFixed(4) : '-'}</div>
+                            <div>⚡ <b>${t.depthUnit}:</b> ${item.depth} km</div>
+                            <div>🇹🇷 <b>${t.trTimeLabel}:</b> ${trTime}</div>
+                            <div>🌍 <b>${t.localTimeLabel}:</b> ${localTime}</div>
+                            <div style="grid-column: span 2;">📅 <b>${t.originDate}:</b> ${fullDate}</div>
                         </div>
                     </div>
                 </div>`;
