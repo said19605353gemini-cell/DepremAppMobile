@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout Repository
@@ -44,3 +46,18 @@ jobs:
       with:
         name: Deprem-Radar-Release-APK
         path: android/app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+      with:
+        tag_name: v1.0.0
+        name: "Deprem Radar v1.0.0 (Android APK)"
+        body: |
+          ### 📱 Deprem Radar Mobil Android APK
+          - AFAD & USGS Canlı Deprem Verileri
+          - Son 7 Gün / 30 Günlük Geçmiş Filtresi
+          - Ülke ve Şehir Arama
+          - İnteraktif Harita Görünümü
+          - Tüm Android Cihazlarla Uyumlu
+        files: android/app/build/outputs/apk/debug/app-debug.apk
