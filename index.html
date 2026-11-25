@@ -291,6 +291,45 @@
             flex-wrap: wrap;
         }
 
+        .btn-map-focus {
+            margin-top: 8px;
+            background: #0F172A;
+            border: 1px solid #334155;
+            color: #38BDF8;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-map-focus:active {
+            transform: scale(0.96);
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #10B981;
+            margin-right: 4px;
+            animation: pulseLive 2s infinite;
+        }
+
+        .live-dot.paused {
+            background: #64748B;
+            animation: none;
+        }
+
+        @keyframes pulseLive {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
         .eq-badge {
             width: 48px;
             height: 48px;
@@ -487,7 +526,7 @@
                 <div class="header-badge">⚡</div>
                 <div class="header-text">
                     <h1 id="txt-app-title">DEPREM RADAR</h1>
-                    <p id="live-indicator">● Canlı & Otomatik</p>
+                    <p id="live-indicator" onclick="toggleAutoRefresh()" style="cursor: pointer;"><span class="live-dot" id="live-dot"></span><span id="live-text">Canlı & Otomatik</span></p>
                 </div>
             </div>
             <div class="header-actions">
@@ -526,14 +565,13 @@
                 <div class="search-box">
                     <span>🔍</span>
                     <input type="text" id="searchInput" placeholder="Şehir veya ülke ara (Örn: İzmir, Japan)..."
-                        oninput="applyFilters()">
+                        oninput="onSearchInput()">
                 </div>
 
                 <!-- Kaynak Seçimi -->
                 <div class="filter-group">
                     <div class="filter-wrap">
-                        <div class="pill active" id="src-afad" onclick="setSource('afad', this)">🇹🇷 AFAD (Türkiye)
-                        </div>
+                        <div class="pill active" id="src-afad" onclick="setSource('afad', this)">🇹🇷 AFAD (Türkiye)</div>
                         <div class="pill" id="src-usgs" onclick="setSource('usgs', this)">🌍 USGS (Dünya Geneli)</div>
                     </div>
                 </div>
@@ -542,8 +580,9 @@
                 <div class="filter-group">
                     <span class="filter-group-title" id="txt-lbl-timerange">Tarih Aralığı:</span>
                     <div class="filter-wrap" id="timeFilters">
-                        <div class="pill active" data-days="7" onclick="setTimeRange(7, this)">7 Gün</div>
+                        <div class="pill" data-days="1" onclick="setTimeRange(1, this)">1 Gün</div>
                         <div class="pill" data-days="3" onclick="setTimeRange(3, this)">3 Gün</div>
+                        <div class="pill active" data-days="7" onclick="setTimeRange(7, this)">7 Gün</div>
                         <div class="pill" data-days="15" onclick="setTimeRange(15, this)">15 Gün</div>
                         <div class="pill" data-days="30" onclick="setTimeRange(30, this)">30 Gün</div>
                         <div class="pill" data-days="45" onclick="setTimeRange(45, this)">45 Gün</div>
@@ -554,19 +593,20 @@
                     </div>
                 </div>
 
-                <!-- Büyüklük Seçimi (3.0'dan 15.0'a Kadar Taşmasız) -->
+                <!-- Büyüklük Seçimi (0.0'dan 9.0'a Kadar) -->
                 <div class="filter-group">
                     <span class="filter-group-title" id="txt-lbl-magnitude">Minimum Şiddet:</span>
                     <div class="filter-wrap" id="magFilters">
-                        <div class="pill" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(5.0, this)">≥ 5.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(6.0, this)">≥ 6.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(7.0, this)">≥ 7.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(8.0, this)">≥ 8.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(9.0, this)">≥ 9.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(10.0, this)">≥ 10.0</div>
-                        <div class="pill" onclick="setMagnitudeFilter(15.0, this)">≥ 15.0</div>
+                        <div class="pill active" data-mag="0" onclick="setMagnitudeFilter(0, this)">≥ 0.0</div>
+                        <div class="pill" data-mag="1" onclick="setMagnitudeFilter(1.0, this)">≥ 1.0</div>
+                        <div class="pill" data-mag="2" onclick="setMagnitudeFilter(2.0, this)">≥ 2.0</div>
+                        <div class="pill" data-mag="3" onclick="setMagnitudeFilter(3.0, this)">≥ 3.0</div>
+                        <div class="pill" data-mag="4" onclick="setMagnitudeFilter(4.0, this)">≥ 4.0</div>
+                        <div class="pill" data-mag="5" onclick="setMagnitudeFilter(5.0, this)">≥ 5.0</div>
+                        <div class="pill" data-mag="6" onclick="setMagnitudeFilter(6.0, this)">≥ 6.0</div>
+                        <div class="pill" data-mag="7" onclick="setMagnitudeFilter(7.0, this)">≥ 7.0</div>
+                        <div class="pill" data-mag="8" onclick="setMagnitudeFilter(8.0, this)">≥ 8.0</div>
+                        <div class="pill" data-mag="9" onclick="setMagnitudeFilter(9.0, this)">≥ 9.0</div>
                     </div>
                 </div>
 
@@ -869,9 +909,10 @@
         function changeLanguage(lang) {
             currentLang = lang;
             const t = i18n[lang] || i18n.tr;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
             document.getElementById('txt-app-title').innerText = t.appTitle;
-            document.getElementById('live-indicator').innerText = t.liveStatus;
+            updateLiveIndicator();
             document.getElementById('btn-refresh').innerText = t.btnRefresh;
             document.getElementById('txt-stat-total').innerText = t.statTotal;
             document.getElementById('txt-stat-max').innerText = t.statMax;
@@ -912,6 +953,59 @@
         let currentFilteredList = [];
         let leafletMap = null;
         let mapMarkers = [];
+        let autoRefreshEnabled = true;
+        let autoRefreshTimer = null;
+        let lastUpdatedAt = null;
+        let pendingFocusEq = null;
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function updateLiveIndicator() {
+            const t = i18n[currentLang] || i18n.tr;
+            const dot = document.getElementById('live-dot');
+            const textEl = document.getElementById('live-text');
+            if (!dot || !textEl) return;
+
+            dot.classList.toggle('paused', !autoRefreshEnabled);
+            const baseLabel = t.liveStatus.replace(/^●\s*/, '');
+            if (!autoRefreshEnabled) {
+                textEl.innerText = `${baseLabel} (⏸)`;
+            } else if (lastUpdatedAt) {
+                const hh = String(lastUpdatedAt.getHours()).padStart(2, '0');
+                const mm = String(lastUpdatedAt.getMinutes()).padStart(2, '0');
+                const ss = String(lastUpdatedAt.getSeconds()).padStart(2, '0');
+                textEl.innerText = `${baseLabel} • ${hh}:${mm}:${ss}`;
+            } else {
+                textEl.innerText = baseLabel;
+            }
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+            if (!autoRefreshEnabled) return;
+            autoRefreshTimer = setInterval(() => {
+                loadData(true);
+            }, 60000);
+        }
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            updateLiveIndicator();
+            startAutoRefresh();
+        }
+
+        function onSearchInput() {
+            currentPage = 1;
+            applyFilters();
+        }
 
         function setSortMode(mode, el) {
             currentSort = mode;
@@ -940,51 +1034,37 @@
 
         function setMagnitudeFilter(mag, el) {
             currentPage = 1;
-            if (minMagnitude === mag) {
+            if (minMagnitude === mag && mag !== 0) {
                 minMagnitude = 0;
-                el.classList.remove('active');
+                document.querySelectorAll('#magFilters .pill').forEach(p => p.classList.remove('active'));
+                const zeroPill = document.querySelector('#magFilters .pill[data-mag="0"]');
+                if (zeroPill) zeroPill.classList.add('active');
             } else {
                 minMagnitude = mag;
                 document.querySelectorAll('#magFilters .pill').forEach(p => p.classList.remove('active'));
                 el.classList.add('active');
             }
-            applyFilters();
+            loadData();
         }
 
-        async function loadData() {
+        async function loadData(isBackground = false) {
             const container = document.getElementById('eqContainer');
             const t = i18n[currentLang] || i18n.tr;
-            container.innerHTML = `<div class="spinner">${t.loading}</div>`;
+            if (!isBackground) {
+                container.innerHTML = `<div class="spinner">${t.loading}</div>`;
+            }
 
             try {
-                // 1 Seneden uzun (3 sene, 5 sene, 10 sene) geçmiş arşivi AFAD API'sinde bulunmadığı için
-                // veya AFAD erişilemediğinde doğrudan USGS küresel & bölgesel sismik arşivinden çekilir.
                 if (currentSource === 'afad') {
                     const now = new Date();
-                    const past = new Date();
-                    past.setDate(now.getDate() - currentDays);
+                    const past = new Date(now.getTime() - currentDays * 24 * 60 * 60 * 1000);
 
                     const sStr = past.toISOString().slice(0, 10) + "%2000:00:00";
                     const eStr = now.toISOString().slice(0, 10) + "%2023:59:59";
 
-                    let threshold = 0;
+                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500&orderby=timedesc`;
                     if (minMagnitude > 0) {
-                        threshold = minMagnitude;
-                    } else if (currentDays >= 1095) {
-                        threshold = 4.0;
-                    } else if (currentDays >= 365) {
-                        threshold = 3.5;
-                    } else if (currentDays >= 90) {
-                        threshold = 3.0;
-                    } else if (currentDays >= 30) {
-                        threshold = 2.5;
-                    } else if (currentDays >= 7) {
-                        threshold = 2.0;
-                    }
-
-                    let url = `https://deprem.afad.gov.tr/apiv2/event/filter?start=${sStr}&end=${eStr}&limit=500`;
-                    if (threshold > 0) {
-                        url += `&minmag=${threshold}`;
+                        url += `&minmag=${minMagnitude}`;
                     }
 
                     const controller = new AbortController();
@@ -993,8 +1073,9 @@
                     const res = await fetch(url, { signal: controller.signal });
                     clearTimeout(timeoutId);
 
+                    if (!res.ok) throw new Error(`AFAD HTTP ${res.status}`);
                     const data = await res.json();
-                    if (!data || data.length === 0) throw new Error("AFAD boş veri");
+                    if (!Array.isArray(data)) throw new Error("AFAD geçersiz veri");
 
                     rawData = data.map(x => ({
                         mag: parseFloat(x.magnitude) || 0,
@@ -1002,31 +1083,31 @@
                         country: x.country || 'Türkiye',
                         province: x.province || '',
                         district: x.district || '',
-                        depth: x.depth || '-',
-                        date: x.date ? x.date.replace('T', ' ').substring(0, 19) : '',
+                        depth: x.depth !== undefined && x.depth !== null ? String(x.depth) : '-',
+                        date: x.date ? String(x.date) : '',
                         lat: parseFloat(x.latitude),
                         lng: parseFloat(x.longitude),
                         source: 'AFAD'
                     }));
                 } else {
-                    // USGS veya 1-10 senelik derin geçmiş arşivi (Kahramanmaraş 7.8, Elazığ 6.8 vs. eksiksiz gelir)
                     const past = new Date();
                     past.setDate(past.getDate() - currentDays);
                     const startTime = past.toISOString().slice(0, 10);
 
-                    let minM = minMagnitude > 0 ? minMagnitude : 2.5;
-                    if (currentDays >= 3650 && minMagnitude === 0) minM = 4.5;
-                    else if (currentDays >= 1095 && minMagnitude === 0) minM = 4.0;
-                    else if (currentDays >= 365 && minMagnitude === 0) minM = 3.5;
-                    else if (currentDays >= 30 && minMagnitude === 0) minM = 3.0;
+                    // 0.0 seçiliyse kısa aralıklarda gerçekten 0'dan başlat; çok uzun aralıklarda API limit=500 koruması için makul taban kullan
+                    let minM = minMagnitude;
+                    if (minMagnitude === 0 && currentDays >= 3650) minM = 4.5;
+                    else if (minMagnitude === 0 && currentDays >= 1095) minM = 4.0;
+                    else if (minMagnitude === 0 && currentDays >= 365) minM = 3.5;
+                    else if (minMagnitude === 0 && currentDays >= 30) minM = 2.5;
 
-                    let url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500`;
-                    if (currentSource === 'afad') {
-                        // Türkiye ve yakın çevresi koordinat alanı
-                        url += `&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45`;
-                    }
+                    const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=500&orderby=time`;
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 12000);
+                    const res = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
 
-                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(`USGS HTTP ${res.status}`);
                     const data = await res.json();
                     rawData = (data.features || []).map(f => {
                         const coords = f.geometry?.coordinates || [];
@@ -1040,40 +1121,45 @@
                         }
 
                         return {
-                            mag: f.properties.mag || 0,
+                            mag: typeof f.properties.mag === 'number' ? f.properties.mag : 0,
                             location: place,
                             country: country,
                             province: '',
                             district: '',
-                            depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
+                            depth: coords.length > 2 && coords[2] !== null ? Number(coords[2]).toFixed(1) : '-',
                             date: f.properties.time,
                             lat: coords.length > 1 ? coords[1] : 0,
-                            lng: coords.length > 0 ? coords[0] : 0
+                            lng: coords.length > 0 ? coords[0] : 0,
+                            source: 'USGS'
                         };
                     });
                 }
 
+                lastUpdatedAt = new Date();
+                updateLiveIndicator();
                 applyFilters();
             } catch (err) {
                 console.warn("Ana veri çekilemedi, yedek arşive geçiliyor:", err);
-                tryFallbackData();
+                if (!isBackground) {
+                    tryFallbackData();
+                }
             }
         }
 
         async function tryFallbackData() {
             const container = document.getElementById('eqContainer');
             try {
-                // Seçilen gün kadar geçmişe git
                 const past = new Date();
                 past.setDate(past.getDate() - currentDays);
                 const startTime = past.toISOString().slice(0, 10);
 
-                let minM = 2.0;
-                if (currentDays >= 30) minM = 4.0;
-                else if (currentDays >= 7) minM = 2.5;
+                let minM = minMagnitude;
+                if (minMagnitude === 0) {
+                    if (currentDays >= 30) minM = 3.0;
+                    else if (currentDays >= 7) minM = 1.5;
+                }
 
-                // Türkiye koordinat alanı (35-43 enlem, 25-45 boylam) veya genel
-                let url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=200`;
+                let url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${minM}&limit=200&orderby=time`;
                 if (currentSource === 'afad') {
                     url += `&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45`;
                 }
@@ -1085,37 +1171,41 @@
                     const place = f.properties.place || 'Türkiye & Çevresi';
                     let country = place.includes(',') ? place.split(',').pop().trim() : 'Bölgesel';
                     return {
-                        mag: f.properties.mag || 0,
+                        mag: typeof f.properties.mag === 'number' ? f.properties.mag : 0,
                         location: place,
                         country: country,
                         province: '',
                         district: '',
-                        depth: coords.length > 2 ? coords[2].toFixed(1) : '-',
-                        date: f.properties.time, // Gerçek geçmiş timestamp'i
+                        depth: coords.length > 2 && coords[2] !== null ? Number(coords[2]).toFixed(1) : '-',
+                        date: f.properties.time,
                         lat: coords.length > 1 ? coords[1] : 0,
-                        lng: coords.length > 0 ? coords[0] : 0
+                        lng: coords.length > 0 ? coords[0] : 0,
+                        source: 'USGS-Fallback'
                     };
                 });
 
-                if (rawData.length === 0) {
-                    const res2 = await fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=3.0&limit=100`);
+                if (rawData.length === 0 && currentSource === 'afad') {
+                    const res2 = await fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startTime}&minmagnitude=${Math.max(minMagnitude, 2.5)}&limit=100&orderby=time`);
                     const data2 = await res2.json();
                     rawData = (data2.features || []).map(f => ({
-                        mag: f.properties.mag || 0,
+                        mag: typeof f.properties.mag === 'number' ? f.properties.mag : 0,
                         location: f.properties.place || 'Global',
                         country: (f.properties.place || '').includes(',') ? f.properties.place.split(',').pop().trim() : 'Dünya',
                         province: '',
                         district: '',
-                        depth: (f.geometry?.coordinates?.length > 2) ? f.geometry.coordinates[2].toFixed(1) : '-',
+                        depth: (f.geometry?.coordinates?.length > 2 && f.geometry.coordinates[2] !== null) ? Number(f.geometry.coordinates[2]).toFixed(1) : '-',
                         date: f.properties.time,
                         lat: f.geometry?.coordinates?.[1] || 0,
-                        lng: f.geometry?.coordinates?.[0] || 0
+                        lng: f.geometry?.coordinates?.[0] || 0,
+                        source: 'USGS-Fallback'
                     }));
                 }
 
+                lastUpdatedAt = new Date();
+                updateLiveIndicator();
                 applyFilters();
             } catch (e) {
-                container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. Bağlantıyı kontrol ediniz.</div>`;
+                container.innerHTML = `<div class="spinner" style="color:#ef4444;">Veriler yüklenemedi. İnternet bağlantınızı kontrol ediniz.</div>`;
             }
         }
 
@@ -1125,19 +1215,36 @@
             if (mag >= 5.0) return { bg: '#ef4444', label: t.strong };
             if (mag >= 4.0) return { bg: '#f97316', label: t.moderate };
             if (mag >= 3.0) return { bg: '#eab308', label: t.light };
-            return { bg: '#10b981', label: t.minor };
+            if (mag >= 2.0) return { bg: '#10b981', label: t.minor };
+            return { bg: '#0d9488', label: t.minor };
+        }
+
+        function getEventEpoch(val) {
+            if (typeof val === 'number') return val;
+            if (typeof val === 'string') {
+                const s = val.trim();
+                if (!s) return 0;
+                // AFAD ISO/UTC formatı: "2026-11-25T14:22:20" veya "2026-11-25 14:22:20"
+                if (s.includes('-')) {
+                    const iso = s.replace(' ', 'T');
+                    const withTz = /Z|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`;
+                    return new Date(withTz).getTime() || 0;
+                }
+                if (s.includes('.')) {
+                    const p = s.split(' ');
+                    if (p.length >= 2) {
+                        const d = p[0].split('.');
+                        return new Date(`${d[2]}-${d[1]}-${d[0]}T${p[1]}+03:00`).getTime() || 0;
+                    }
+                }
+            }
+            return new Date(val).getTime() || 0;
         }
 
         function applyFilters() {
             const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
             let filtered = rawData.filter(item => {
                 if (item.mag < minMagnitude) return false;
-                if (currentSource === 'afad') {
-                    const c = (item.country || '').toLowerCase();
-                    const loc = (item.location || '').toLowerCase();
-                    const isTr = c.includes('türkiye') || c.includes('turkey') || loc.includes('türkiye') || loc.includes('turkey') || (item.province && item.province.trim().length > 0);
-                    if (!isTr) return false;
-                }
                 if (query) {
                     const loc = (item.location || '').toLowerCase();
                     const country = (item.country || '').toLowerCase();
@@ -1150,32 +1257,19 @@
 
             // Tarih ve Büyüklük Sıralamaları
             filtered.sort((a, b) => {
-                // Zaman timestamp'i elde etme
-                const getEpoch = (val) => {
-                    if (typeof val === 'number') return val;
-                    if (typeof val === 'string') {
-                        if (val.includes('-')) return new Date(val.replace(' ', 'T')).getTime() || 0;
-                        if (val.includes('.')) {
-                            const p = val.split(' ');
-                            if (p.length >= 2) {
-                                const d = p[0].split('.');
-                                return new Date(`${d[2]}-${d[1]}-${d[0]}T${p[1]}`).getTime() || 0;
-                            }
-                        }
-                    }
-                    return new Date(val).getTime() || 0;
-                };
-
                 if (currentSort === 'magDesc') {
-                    return b.mag - a.mag; // En yüksek puan/şiddetten aşağıya
+                    return b.mag - a.mag;
                 } else if (currentSort === 'magAsc') {
-                    return a.mag - b.mag; // En düşükten yukarıya
+                    return a.mag - b.mag;
                 } else if (currentSort === 'oldest') {
-                    return getEpoch(a.date) - getEpoch(b.date); // Eskiden yeniye
+                    return getEventEpoch(a.date) - getEventEpoch(b.date);
                 } else {
-                    return getEpoch(b.date) - getEpoch(a.date); // En yeniden en eskiye
+                    return getEventEpoch(b.date) - getEventEpoch(a.date);
                 }
             });
+
+            const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+            if (currentPage > totalPages) currentPage = 1;
 
             currentFilteredList = filtered;
             renderCurrentPage();
@@ -1196,9 +1290,13 @@
             const endIndex = startIndex + pageSize;
             const pageItems = currentFilteredList.slice(startIndex, endIndex);
 
-            container.innerHTML = pageItems.map((item) => {
+            container.innerHTML = pageItems.map((item, idx) => {
                 const { bg, label } = getMagnitudeColor(item.mag);
                 const { fullDate, trTime, localTime } = formatDateInfo(item.date, item.lng);
+                const safeLocation = escapeHtml(item.location);
+                const safeCountry = escapeHtml(item.country);
+                const safeDepth = escapeHtml(item.depth);
+                const hasCoords = !isNaN(item.lat) && !isNaN(item.lng) && item.lat !== 0;
 
                 return `
                 <div class="eq-card" onclick="this.classList.toggle('expanded')">
@@ -1208,10 +1306,10 @@
                             <span class="type">${label}</span>
                         </div>
                         <div class="eq-info">
-                            <div class="eq-location">${item.location}</div>
+                            <div class="eq-location">${safeLocation}</div>
                             <div class="eq-sub">
-                                <span class="eq-country-tag">${item.country}</span>
-                                <span>📍 ${item.depth} km ${t.depthUnit}</span>
+                                <span class="eq-country-tag">${safeCountry}</span>
+                                <span>📍 ${safeDepth} km ${t.depthUnit}</span>
                             </div>
                         </div>
                         <div class="eq-meta">
@@ -1227,14 +1325,15 @@
                     </div>
                     <!-- Tıklayınca Açılan Tam Detay Alanı -->
                     <div class="eq-details">
-                        <div style="color: #F8FAFC; font-weight: 700; margin-bottom: 6px;">📍 ${t.fullLocation}: ${item.location}</div>
+                        <div style="color: #F8FAFC; font-weight: 700; margin-bottom: 6px;">📍 ${t.fullLocation}: ${safeLocation}</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
-                            <div>🌐 <b>${t.coordinates}:</b> ${item.lat ? item.lat.toFixed(4) : '-'}, ${item.lng ? item.lng.toFixed(4) : '-'}</div>
-                            <div>⚡ <b>${t.depthUnit}:</b> ${item.depth} km</div>
+                            <div>🌐 <b>${t.coordinates}:</b> ${hasCoords ? item.lat.toFixed(4) : '-'}, ${hasCoords ? item.lng.toFixed(4) : '-'}</div>
+                            <div>⚡ <b>${t.depthUnit}:</b> ${safeDepth} km</div>
                             <div>🇹🇷 <b>${t.trTimeLabel}:</b> ${trTime}</div>
                             <div>🌍 <b>${t.localTimeLabel}:</b> ${localTime}</div>
                             <div style="grid-column: span 2;">📅 <b>${t.originDate}:</b> ${fullDate}</div>
                         </div>
+                        ${hasCoords ? `<button class="btn-map-focus" onclick="event.stopPropagation(); focusOnMap(${startIndex + idx})">🗺️ ${t.navTabMap}</button>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -1287,166 +1386,54 @@
         function formatDateInfo(dateRaw, lng) {
             if (!dateRaw) return { fullDate: '-', trTime: '--:--', localTime: '--:--' };
             try {
-                // 1) "22.11.2026 23:15:57" Formatı (Türkçe yerel string)
-                if (typeof dateRaw === 'string' && dateRaw.includes('.')) {
-                    const parts = dateRaw.split(' ');
-                    if (parts.length >= 2) {
-                        const dmy = parts[0].split('.');
-                        const hms = parts[1].split(':');
-                        if (dmy.length === 3 && hms.length >= 2) {
-                            const day = dmy[0];
-                            const month = dmy[1];
-                            const year = dmy[2];
-                            const trHour = hms[0];
-                            const trMin = hms[1];
-
-                            let localOffsetHours = 3;
-                            if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
-                                localOffsetHours = Math.round(lng / 15);
-                            }
-                            const diffHours = localOffsetHours - 3;
-                            let locH = (parseInt(trHour) + diffHours) % 24;
-                            if (locH < 0) locH += 24;
-                            const localHourStr = String(locH).padStart(2, '0');
-
-                            return {
-                                fullDate: `${day}.${month}.${year}`,
-                                trTime: `${trHour}:${trMin}`,
-                                localTime: `${localHourStr}:${trMin}`
-                            };
-                        }
-                    }
+                const utcMs = getEventEpoch(dateRaw);
+                if (!utcMs || isNaN(utcMs)) {
+                    return { fullDate: String(dateRaw), trTime: '--:--', localTime: '--:--' };
                 }
 
-                // 2) AFAD Formatı: "2026-11-22 20:12:02" veya "2026-11-22T20:12:02"
-                if (typeof dateRaw === 'string' && dateRaw.includes('-')) {
-                    const clean = dateRaw.replace('T', ' ');
-                    const parts = clean.split(' ');
-                    if (parts.length >= 2) {
-                        const ymd = parts[0].split('-');
-                        const hms = parts[1].split(':');
-                        if (ymd.length === 3 && hms.length >= 2) {
-                            const year = ymd[0];
-                            const month = ymd[1];
-                            const day = ymd[2];
-                            const trHour = hms[0];
-                            const trMin = hms[1];
+                const trDate = new Date(utcMs + 3 * 3600 * 1000);
+                const day = String(trDate.getUTCDate()).padStart(2, '0');
+                const month = String(trDate.getUTCMonth() + 1).padStart(2, '0');
+                const year = trDate.getUTCFullYear();
+                const trHour = String(trDate.getUTCHours()).padStart(2, '0');
+                const trMin = String(trDate.getUTCMinutes()).padStart(2, '0');
 
-                            let localOffsetHours = 3;
-                            if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
-                                localOffsetHours = Math.round(lng / 15);
-                            }
-                            const diffHours = localOffsetHours - 3;
-                            let locH = (parseInt(trHour) + diffHours) % 24;
-                            if (locH < 0) locH += 24;
-                            const localHourStr = String(locH).padStart(2, '0');
-
-                            return {
-                                fullDate: `${day}.${month}.${year}`,
-                                trTime: `${trHour}:${trMin}`,
-                                localTime: `${localHourStr}:${trMin}`
-                            };
-                        }
-                    }
+                let localOffsetHours = 3;
+                if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
+                    localOffsetHours = Math.round(lng / 15);
                 }
+                const localDate = new Date(utcMs + localOffsetHours * 3600 * 1000);
+                const locHour = String(localDate.getUTCHours()).padStart(2, '0');
+                const locMin = String(localDate.getUTCMinutes()).padStart(2, '0');
 
-                // 3) USGS Unix Epoch Timestamp (Örn: 1795378557580)
-                let d = new Date(dateRaw);
-                if (!isNaN(d.getTime())) {
-                    const utcMs = d.getTime();
-                    const trDate = new Date(utcMs + 3 * 3600 * 1000);
-
-                    const day = String(trDate.getUTCDate()).padStart(2, '0');
-                    const month = String(trDate.getUTCMonth() + 1).padStart(2, '0');
-                    const year = trDate.getUTCFullYear();
-                    const trHour = String(trDate.getUTCHours()).padStart(2, '0');
-                    const trMin = String(trDate.getUTCMinutes()).padStart(2, '0');
-
-                    let localOffsetHours = 3;
-                    if (typeof lng === 'number' && !isNaN(lng) && lng !== 0) {
-                        localOffsetHours = Math.round(lng / 15);
-                    }
-                    const localDate = new Date(utcMs + localOffsetHours * 3600 * 1000);
-                    const locHour = String(localDate.getUTCHours()).padStart(2, '0');
-                    const locMin = String(localDate.getUTCMinutes()).padStart(2, '0');
-
-                    return {
-                        fullDate: `${day}.${month}.${year}`,
-                        trTime: `${trHour}:${trMin}`,
-                        localTime: `${locHour}:${locMin}`
-                    };
-                }
-
-                return { fullDate: String(dateRaw), trTime: '--:--', localTime: '--:--' };
+                return {
+                    fullDate: `${day}.${month}.${year}`,
+                    trTime: `${trHour}:${trMin}`,
+                    localTime: `${locHour}:${locMin}`
+                };
             } catch (e) {
                 return { fullDate: String(dateRaw), trTime: '--:--', localTime: '--:--' };
             }
-        }
-
-        function renderList(list) {
-            const container = document.getElementById('eqContainer');
-            if (!list.length) {
-                container.innerHTML = `<div class="spinner">Arama kriterlerine uygun deprem bulunamadı.</div>`;
-                return;
-            }
-
-            const displayList = list.slice(0, 60);
-
-            container.innerHTML = displayList.map((item, idx) => {
-                const { bg, label } = getMagnitudeColor(item.mag);
-                const { fullDate, trTime, localTime } = formatDateInfo(item.date, item.lng);
-
-                return `
-                <div class="eq-card" onclick="this.classList.toggle('expanded')">
-                    <div class="eq-card-header">
-                        <div class="eq-badge" style="background: ${bg};">
-                            <span class="mag">${item.mag.toFixed(1)}</span>
-                            <span class="type">${label}</span>
-                        </div>
-                        <div class="eq-info">
-                            <div class="eq-location">${item.location}</div>
-                            <div class="eq-sub">
-                                <span class="eq-country-tag">${item.country}</span>
-                                <span>📍 ${item.depth} km Derinlik</span>
-                            </div>
-                        </div>
-                        <div class="eq-meta">
-                            <div style="font-weight: 800; color: #38BDF8; font-size: 13px;">${trTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">TR</span></div>
-                            <div style="font-size: 11px; color: #FBBF24; font-weight: 700; margin-top: 2px;">${localTime} <span style="font-size: 9px; font-weight: normal; color: #64748B;">Yerel</span></div>
-                        </div>
-                    </div>
-                    <!-- Her telefonda net gözüken tam tarih şeridi -->
-                    <div class="eq-date-row">
-                        <span>📅 <b>${fullDate}</b></span>
-                        <span style="color: #475569;">•</span>
-                        <span style="color: #64748B; font-size: 10px;">Detay için tıkla ▾</span>
-                    </div>
-                    <!-- Tıklayınca Açılan Tam Detay Alanı -->
-                    <div class="eq-details">
-                        <div style="color: #F8FAFC; font-weight: 700; margin-bottom: 6px;">📍 Tam Konum: ${item.location}</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
-                            <div>🌐 <b>Koordinat:</b> ${item.lat ? item.lat.toFixed(4) : '-'}, ${item.lng ? item.lng.toFixed(4) : '-'}</div>
-                            <div>⚡ <b>Derinlik:</b> ${item.depth} km</div>
-                            <div>🇹🇷 <b>TR Saati:</b> ${trTime}</div>
-                            <div>🌍 <b>Yerel Saat:</b> ${localTime}</div>
-                            <div style="grid-column: span 2;">📅 <b>Oluş Tarihi:</b> ${fullDate}</div>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
         }
 
         function updateStats(list) {
             document.getElementById('stat-count').innerText = list.length;
             if (list.length) {
                 const maxMag = Math.max(...list.map(x => x.mag));
-                document.getElementById('stat-max').innerText = maxMag > 0 ? maxMag.toFixed(1) : '-';
+                document.getElementById('stat-max').innerText = maxMag.toFixed(1);
                 const felt = list.filter(x => x.mag >= 3.0).length;
                 document.getElementById('stat-felt').innerText = felt;
             } else {
                 document.getElementById('stat-max').innerText = '-';
                 document.getElementById('stat-felt').innerText = '0';
             }
+        }
+
+        function focusOnMap(index) {
+            const item = currentFilteredList[index];
+            if (!item || isNaN(item.lat) || isNaN(item.lng) || item.lat === 0) return;
+            pendingFocusEq = item;
+            switchTab('map');
         }
 
         function switchTab(tab) {
@@ -1473,22 +1460,31 @@
             if (!leafletMap) {
                 leafletMap = L.map('map').setView([39.0, 35.0], 5);
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: 'OpenStreetMap'
+                    attribution: 'Esri'
                 }).addTo(leafletMap);
             }
             setTimeout(() => {
                 leafletMap.invalidateSize();
-                applyFilters();
+                updateMap(currentFilteredList);
+                if (pendingFocusEq) {
+                    const target = pendingFocusEq;
+                    pendingFocusEq = null;
+                    leafletMap.flyTo([target.lat, target.lng], 9, { duration: 0.7 });
+                    const match = mapMarkers.find(m => m._eqItem === target);
+                    if (match) match.openPopup();
+                }
             }, 200);
         }
 
         function updateMap(list) {
+            const t = i18n[currentLang] || i18n.tr;
             mapMarkers.forEach(m => leafletMap.removeLayer(m));
             mapMarkers = [];
 
-            list.slice(0, 80).forEach(item => {
+            list.slice(0, 200).forEach(item => {
                 if (!isNaN(item.lat) && !isNaN(item.lng) && item.lat !== 0) {
                     const { bg } = getMagnitudeColor(item.mag);
+                    const { fullDate, trTime } = formatDateInfo(item.date, item.lng);
                     const marker = L.circleMarker([item.lat, item.lng], {
                         radius: Math.max(5, item.mag * 3.5),
                         fillColor: bg,
@@ -1496,7 +1492,13 @@
                         weight: 1,
                         opacity: 1,
                         fillOpacity: 0.8
-                    }).bindPopup(`<b>${item.location}</b><br>Ülke: ${item.country}<br>Büyüklük: ${item.mag.toFixed(1)}<br>Derinlik: ${item.depth} km<br>Tarih: ${item.date}`);
+                    }).bindPopup(
+                        `<b>${escapeHtml(item.location)}</b><br>` +
+                        `${escapeHtml(item.country)} • <b>M ${item.mag.toFixed(1)}</b><br>` +
+                        `${t.depthUnit}: ${escapeHtml(item.depth)} km<br>` +
+                        `${t.originDate}: ${fullDate} ${trTime} (${t.trTimeLabel})`
+                    );
+                    marker._eqItem = item;
                     marker.addTo(leafletMap);
                     mapMarkers.push(marker);
                 }
@@ -1504,6 +1506,7 @@
         }
 
         loadData();
+        startAutoRefresh();
     </script>
 </body>
 
